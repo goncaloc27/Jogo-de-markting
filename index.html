@@ -1,322 +1,302 @@
-{
- "cells": [
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "16b8e657",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "<!DOCTYPE html><html lang=\"pt-PT\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\"><title>Simulador: crescer 15% até ao final do ano</title>\n",
-    "<!-- Versão Firebase: aloje este ficheiro fora do claude.ai (p.ex. Firebase Hosting, GitHub Pages) -->\n",
-    "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap\"><style>\n",
-    ":root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#edf0f2;--cd:#fff;--soft:#f4f7f8;--fg:#16262d;--mu:#5d6c74;--bd:#d5dce0;--hero:#12303b;--ac:#1f7a8c;--am:#e0a030;--ok:#1f8a5b;--ko:#c4432b}\n",
-    "@media(prefers-color-scheme:dark){:root:not([data-theme=\"light\"]){--bg:#10171a;--cd:#182126;--soft:#111a1e;--fg:#e6ecee;--mu:#8fa0a8;--bd:#2a373d;--hero:#0c2027;--ac:#56b6c9;--am:#f0b84a;--ok:#4cc38a;--ko:#ff8f78}}\n",
-    ":root[data-theme=\"dark\"]{--bg:#10171a;--cd:#182126;--soft:#111a1e;--fg:#e6ecee;--mu:#8fa0a8;--bd:#2a373d;--hero:#0c2027;--ac:#56b6c9;--am:#f0b84a;--ok:#4cc38a;--ko:#ff8f78}\n",
-    "html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 90px)}*{box-sizing:border-box}\n",
-    "body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 Manrope,system-ui,-apple-system,\"Segoe UI\",sans-serif;font-variant-numeric:tabular-nums}\n",
-    ".wrap{max-width:1000px;margin:auto;padding:0 14px}\n",
-    ".hero{background:var(--hero);color:#f3f7f8;padding:20px 0 22px;border-radius:0 0 18px 18px}\n",
-    ".hero h1{font-size:20px;font-weight:800;margin:0;letter-spacing:-.01em}.hs{font-size:13px;opacity:.75;margin-top:2px}\n",
-    ".gap{margin-top:18px;display:grid;gap:14px}.gl{display:block;font-size:13px;opacity:.8}\n",
-    "#gv{display:block;font-size:40px;font-weight:800;line-height:1.1;color:var(--am);letter-spacing:-.02em}.gs{font-size:13px;opacity:.9}.gs b{color:#fff}\n",
-    ".trk{position:relative;height:10px;border-radius:5px;background:rgba(255,255,255,.18);margin-top:4px}.trk i{position:absolute;inset:0 auto 0 0;background:var(--am);border-radius:5px}\n",
-    ".trk u{position:absolute;top:-4px;bottom:-4px;width:2px;background:#fff}.tls{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11.5px;opacity:.85;margin-top:6px}\n",
-    "@media(min-width:760px){.gap{grid-template-columns:1fr 1.5fr;align-items:end}}\n",
-    "h2{font-size:15px;font-weight:700;margin:16px 0 8px}h3{font-size:14px;font-weight:700;margin:0 0 10px}\n",
-    ".tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}\n",
-    ".tl{background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}.tl small{display:block;color:var(--mu);font-size:12px;line-height:1.3}\n",
-    ".tl b{display:block;font-size:18px;font-weight:700;margin-top:2px}.tl em{display:block;font-style:normal;font-size:11.5px;color:var(--mu);line-height:1.3;margin-top:2px}.tl.good b{color:var(--ok)}.tl.bad b{color:var(--ko)}\n",
-    ".stk{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--cd);border-bottom:1px solid var(--bd);margin-top:16px}\n",
-    "nav{display:flex;overflow-x:auto;max-width:1000px;margin:auto;padding:0 8px}\n",
-    "nav button{border:0;border-bottom:3px solid transparent;border-radius:0;background:none;color:var(--mu);padding:11px 10px 8px;font-weight:600;font-size:14px}nav button.on{color:var(--fg);border-color:var(--ac)}\n",
-    "#bar{max-width:1000px;margin:auto;padding:6px 14px;font-size:12.5px;color:var(--mu);border-top:1px solid var(--bd)}\n",
-    "button{font:inherit;background:var(--cd);color:var(--fg);border:1px solid var(--bd);border-radius:8px;padding:7px 12px;cursor:pointer}button:hover{border-color:var(--ac)}\n",
-    "button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--ac);outline-offset:2px}\n",
-    ".chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:14px 0 0}.chips button{border-radius:999px;font-size:13px}\n",
-    ".pg{max-width:1000px;margin:auto;padding:14px 14px 28px}\n",
-    ".card{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:12px}\n",
-    ".g{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}\n",
-    "label{display:flex;flex-direction:column;font-size:12px;color:var(--mu);gap:3px;font-weight:600}\n",
-    "input,select{font:inherit;font-size:16px;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--soft);color:var(--fg);width:100%;min-height:40px}\n",
-    ".imp{background:var(--cd);border:1px solid var(--bd);border-left:4px solid var(--am);border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:12px}\n",
-    ".tw{overflow-x:auto}.tw.card{padding:6px}table{border-collapse:collapse;width:100%;font-size:13px}td,th{border-bottom:1px solid var(--bd);padding:6px 8px;text-align:right;white-space:nowrap}td:first-child,th:first-child{text-align:left}th{color:var(--mu);font-weight:600}\n",
-    ".n{color:var(--mu);font-size:12.5px}.w{color:var(--ko);font-weight:600}.ok{color:var(--ok)}.ko{color:var(--ko)}\n",
-    "details{background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:8px 12px;margin:-4px 0 12px}summary{cursor:pointer;font-size:13px;font-weight:600}\n",
-    ".ck{flex-direction:row;align-items:center;gap:8px;font-size:13px;color:var(--fg);font-weight:400;padding:3px 0}.ck input{width:auto;min-height:0}\n",
-    "body.locked{overflow:hidden}body.locked>*:not(#gate):not(script){display:none!important}\n",
-    "#gate{display:none;min-height:100vh;align-items:center;justify-content:center;padding:20px;background:var(--hero)}body.locked #gate{display:flex}\n",
-    ".gbox{background:var(--cd);border-radius:16px;padding:22px;width:100%;max-width:400px}.gbox h1{font-size:20px;margin:0 0 4px}.gbox label{margin-top:10px}.rg{display:none}\n",
-    ".seg{display:flex;gap:4px;background:var(--soft);padding:4px;border-radius:10px;margin:14px 0 4px}.seg button{flex:1;border:0;background:none;border-radius:8px}.seg button.on{background:var(--cd);box-shadow:0 1px 3px rgba(0,0,0,.2);font-weight:700}\n",
-    ".pri{background:var(--hero);color:#fff;border-color:var(--hero);width:100%;margin-top:14px;padding:11px;font-weight:700}.pri:disabled{opacity:.6}#gm{min-height:20px;font-size:13px;margin:10px 0 0}\n",
-    ".ub{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;margin-bottom:12px}.ub button{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.3);padding:4px 10px;font-size:12px}\n",
-    ".ur{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bd);font-size:13px}\n",
-    ".fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}.fb{display:flex;flex-wrap:wrap;gap:8px}.fb button{padding:9px 14px}\n",
-    ".dz{border:2px dashed var(--bd);border-radius:12px;padding:24px 12px;text-align:center;cursor:pointer;display:grid;gap:4px;background:var(--soft)}.dz:hover,.dz.dv{border-color:var(--ac);background:var(--cd)}\n",
-    "textarea{width:100%;font:12px/1.4 ui-monospace,Menlo,monospace;background:var(--soft);color:var(--fg);border:1px solid var(--bd);border-radius:8px;padding:8px;margin-bottom:8px}.fs{min-height:22px;font-size:13px;font-weight:600;margin:10px 0}\n",
-    "</style></head><body class=locked>\n",
-    "<div id=gate><div class=gbox><h1>Simulador de apoio à decisão</h1><p class=n>Acesso reservado à equipa. Entre ou crie o seu utilizador.</p>\n",
-    "<div class=seg><button id=t1 onclick=gt(0)>Entrar</button><button id=t2 onclick=gt(1)>Criar utilizador</button></div>\n",
-    "<div id=gf><label>Nome de utilizador<input id=lu autocomplete=username autocapitalize=none></label><label>Palavra-passe<input id=lp type=password autocomplete=current-password></label>\n",
-    "<label class=rg>Confirmar palavra-passe<input id=lp2 type=password autocomplete=new-password></label><label class=rg>Nome a mostrar (opcional)<input id=ln></label><label class=rg><span id=lcs>Código da equipa</span><input id=lc type=password autocomplete=off></label>\n",
-    "<button id=go class=pri>Entrar</button></div><p id=gm></p></div></div>\n",
-    "\n",
-    "<header class=hero><div class=wrap><div id=ub class=ub></div><h1 id=hn></h1><div id=hs class=hs></div><div class=gap><div><span class=gl>Desvio a cobrir com as medidas</span><b id=gv></b><span id=gs class=gs></span></div><div id=gp></div></div></div></header>\n",
-    "<section id=up class=wrap hidden></section><main class=wrap id=dash></main>\n",
-    "<div class=stk><nav><button onclick=tab(0)>Configurar empresa</button><button onclick=tab(1)>P1 Vendas</button><button onclick=tab(2)>P2 Marketing</button><button onclick=tab(3)>P3 Promoções</button><button onclick=tab(4)>Resultados</button><button onclick=tab(5)>Comparar</button><button onclick=tab(6)>Fórmulas</button><button onclick=tab(7)>Ficheiros</button></nav><div id=bar></div></div>\n",
-    "<div class=pg id=cfg></div><div class=pg id=p1></div><div class=pg id=p2></div><div class=pg id=p3></div>\n",
-    "<div class=pg><p class=chips><b>Cenários de teste:</b> <button onclick=\"pre('A')\">A (P1)</button> <button onclick=\"pre('B')\">B (P2)</button> <button onclick=\"pre('C')\">C (P3)</button> <button onclick=\"pre('D')\">D (A+B+C)</button> <button onclick=\"pre('E')\">E (D com custos +5%, margem −1 p.p.)</button></p>\n",
-    "<div id=kp></div><h2>Faturação mensal (€)</h2><div class=card style=\"height:320px\"><canvas id=cv></canvas></div><h2>Contributo mensal das medidas</h2><div class=\"tw card\"><table id=tb></table></div>\n",
-    "<h2>Guardar cenário (máx. 4)</h2><div class=g><input id=nm placeholder=\"Nome do cenário\"><button onclick=save()>Guardar</button></div></div>\n",
-    "<div class=pg><div class=\"tw card\"><table id=cmpT></table></div><p class=n>Guarde cenários no separador Resultados. O estado fica só em memória.</p></div>\n",
-    "<div class=pg>\n",
-    "<h3>Regras do modelo</h3><ul class=n>\n",
-    "<li>Meta = faturação do ano base × (1 + meta). g = crescimento homólogo acumulado (meses reais). Cenário base = mês do ano base × (1 + g).</li>\n",
-    "<li>P1: F = n × REF × S(m) × rampa(k) × (1 − canibalização); custo = n × custo mensal + comissão × F; no mês de entrada + custos únicos. S(m) = fat. do mês ÷ média (jan.–jun. se ref. C06; anual nos outros casos).</li>\n",
-    "<li>P2: custo por lead efetivo = CPL × (1 + rend. decr. × log2(B ÷ orçamento médio)) se B &gt; orçamento médio; novos clientes = B ÷ CPL efetivo × conversão; compram após o desfasamento: compra média nos 6 primeiros meses e × retenção a partir do 7.º.</li>\n",
-    "<li>P3: F = Fbase_K × (1 − d) × (1 + elasticidade × d); custo das mercadorias = Fbase_K × (1 + elast. × d) × (1 − margem); mês seguinte: quebra = Fbase_K × antecipação (se for janeiro seguinte, mostra-se em «efeito no ano seguinte»).</li>\n",
-    "<li>Resultado incremental = margem bruta incremental − custos − transportes % × faturação incremental. ROI = resultado ÷ (custos + desconto). A combinação soma os efeitos (aditividade).</li>\n",
-    "<li>Valor a 24 meses: resultado incremental de P1 e P2 durante 24 meses. Resultado operacional = base × margem ponderada − gastos operacionais base + resultado incremental.</li></ul>\n",
-    "<h3>Origem dos parâmetros (Excel vs estimativa)</h3><div class=tw><table><tr><th>Parâmetro<th>Excel<th>Estimado<th>Fiabilidade</tr>\n",
-    "<tr><td>Compra mensal de novo cliente<td>580 €<td>596 €<td>35 clientes</tr><tr><td>Retenção a 6 meses<td>80%<td>87,5%<td>24 clientes</tr>\n",
-    "<tr><td>Elasticidade promocional<td>2,3<td>1,99<td>1 promoção</tr><tr><td>Antecipação<td>12%<td>18,6% (quebra em agosto)<td>1 promoção</tr>\n",
-    "<tr><td>Produtividade experientes / C06<td>30 902 / 15 527 €<td>30 902 / 15 527 €<td>coincide</tr></table></div>\n",
-    "<p class=n>Valores iniciais: Excel. Qualquer alteração feita em «Configurar empresa» é da equipa. Estimativas com poucos casos: usar com prudência.</p></div>\n",
-    "<div class=pg><div class=fgrid>\n",
-    "<section class=card><h3>Exportar</h3><p class=n>Guarde a configuração para a partilhar com a equipa, ou os resultados para trabalhar em Excel.</p><div class=fb><button id=bj>Configuração (JSON)</button><button id=bx>Resultados (Excel)</button><button id=bc>Meses (CSV)</button></div></section>\n",
-    "<section class=card><h3>Importar</h3><div id=dz class=dz><b>Largue aqui um ficheiro</b><span class=n>ou toque para escolher: configuração (.json) ou Excel atualizado (.xlsx)</span></div><input id=fi type=file accept=\".json,.xlsx,.xlsm\" hidden></section></div>\n",
-    "<p id=fs class=fs></p>\n",
-    "<section class=card><h3>Configuração em texto</h3><p class=n>Alternativa se o navegador bloquear descargas: copie o texto, ou cole aqui um texto exportado e importe.</p><textarea id=tx rows=6 spellcheck=false></textarea><div class=fb><button id=bcp>Copiar</button><button id=bt>Importar texto</button></div></section>\n",
-    "<p class=n>O Excel importado deve ter a mesma estrutura do original (folhas Configuracao, Encomendas, Linhas_Encomenda, Comerciais e Campanhas_Marketing). Importar substitui a configuração atual.</p></div>\n",
-    "<script src=\"https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js\"></script>\n",
-    "<script src=\"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js\"></script>\n",
-    "<script src=\"https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js\"></script>\n",
-    "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js\"></script>\n",
-    "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js\"></script>\n",
-    "<script>const D={\"cfg\": {\"EMP_NOME\": \"Âmbar e Sal, Distribuição de Cosmética Profissional, Lda.\", \"EMP_SETOR\": \"Distribuição grossista de cosmética e produtos de estética profissional\", \"EMP_SEDE\": \"Maia (distrito do Porto)\", \"EMP_EQUIPA\": \"[preencher]\", \"DATA_REF\": \"2026-06-30 00:00:00\", \"ANO_BASE\": 2025.0, \"ANO_META\": 2026.0, \"META_CRESC\": 0.15, \"MES_INICIO\": 7.0, \"IVA\": 0.23, \"N_PAG\": 14.0, \"TSU_EP\": 0.2375, \"SEG_AT\": 0.015, \"SUB_ALIM_DIA\": 9.0, \"DIAS_UTEIS_ANO\": 220.0, \"FV_SAL_BASE\": 1250.0, \"FV_COMISSAO\": 0.03, \"FV_VIATURA\": 620.0, \"FV_AJUDAS\": 220.0, \"FV_COMUNIC\": 45.0, \"FV_RECRUT\": 2500.0, \"FV_FORMACAO\": 1800.0, \"FV_EQUIP\": 1500.0, \"FV_CANIB\": 0.1, \"FV_CUSTO_MENSAL\": 2876.5625, \"FV_CUSTO_ENTRADA\": 5800.0, \"FV_PROD_EXPERIENTE\": 30902.4346666667, \"FV_PROD_C06\": 15526.6783333333, \"FV_PROD_REF\": 15526.6783333333, \"FV_RAMPA_1\": 0.07, \"FV_RAMPA_2\": 0.2, \"FV_RAMPA_3\": 0.35, \"FV_RAMPA_4\": 0.5, \"FV_RAMPA_5\": 0.6, \"FV_RAMPA_6\": 0.7, \"FV_RAMPA_7\": 0.8, \"FV_RAMPA_8\": 0.9, \"FV_RAMPA_9\": 0.95, \"FV_RAMPA_10\": 1.0, \"MKT_COMPRA_NOVO\": 580.0, \"MKT_RETENCAO_6M\": 0.8, \"MKT_REND_DECR\": 0.15, \"MKT_META\": 3.0, \"MKT_GOOGLE\": 2.0, \"MKT_EMAIL\": 2.0, \"MKT_FEIRA\": 3.0, \"MKT_AMOSTRAS\": 2.0, \"MKT_INFLU\": 2.0, \"PRM_ELAST\": 2.3, \"PRM_ANTECIP\": 0.12, \"PRM_CUSTO_FIXO\": 900.0, \"PRM_DESC_MAX\": 0.3, \"MARG_BRUTA\": 0.455030765242338, \"CF_RENDAS\": 5350.0, \"CF_ENERGIA\": 1150.0, \"CF_COMUNIC\": 780.0, \"CF_SEGUROS\": 420.0, \"CF_OUTROS\": 950.0, \"CF_FROTA_LOG\": 750.0, \"TRANSP_PCT\": 0.025, \"PMR\": 45.0, \"CUSTO_PESSOAL_MES\": 50609.2021125}, \"h24\": [130972.16, 136137.08, 161402.06, 173124.95, 203523.89, 205453.81, 189672.28, 120164.94, 165334.93, 164704.06, 217445.85, 227158.18], \"h25\": [133254.99, 139062.29, 164116.96, 188659.52, 204591.06, 196834.19, 203922.98, 130554.38, 189749.15, 189301.54, 248261.87, 250165.23], \"h26\": [137548.77, 148094.68, 174348.12, 189346.6, 216489.35, 210323.06], \"cats\": [\"Barbearia\", \"Cabelo\", \"Cofres de oferta\", \"Cuidado de corpo\", \"Cuidado de rosto\", \"Estética profissional\", \"Maquilhagem\", \"Perfumaria\", \"Solares\", \"Unhas\"], \"catM\": [[2947.0, 3438.0, 3876.0, 2963.0, 4034.0, 4572.0, 4458.0, 2891.0, 5959.0, 5869.0, 6067.0, 4167.0], [28802.0, 26882.0, 34376.0, 38857.0, 35873.0, 37411.0, 40187.0, 25201.0, 38164.0, 41288.0, 49053.0, 43479.0], [1953.0, 2364.0, 3321.0, 5094.0, 13902.0, 3018.0, 2472.0, 978.0, 1896.0, 8555.0, 27092.0, 36282.0], [22271.0, 21388.0, 26809.0, 27136.0, 25530.0, 25318.0, 31208.0, 16373.0, 27243.0, 29057.0, 32081.0, 26354.0], [34937.0, 31912.0, 31908.0, 42070.0, 36177.0, 35227.0, 33626.0, 28004.0, 41363.0, 37000.0, 40442.0, 39098.0], [8734.0, 11645.0, 12041.0, 16235.0, 17657.0, 15203.0, 19130.0, 10631.0, 15008.0, 13185.0, 14148.0, 11264.0], [9122.0, 11586.0, 13622.0, 12233.0, 12831.0, 15527.0, 10899.0, 9030.0, 13834.0, 15281.0, 19164.0, 21975.0], [14292.0, 16439.0, 19789.0, 18045.0, 25292.0, 15668.0, 13612.0, 12325.0, 18319.0, 19957.0, 39931.0, 54796.0], [2890.0, 2377.0, 9060.0, 16335.0, 23281.0, 33958.0, 37699.0, 16238.0, 13602.0, 4994.0, 4886.0, 2318.0], [7306.0, 11031.0, 9316.0, 9692.0, 10015.0, 10932.0, 10632.0, 8884.0, 14362.0, 14116.0, 15400.0, 10433.0]], \"catW\": [0.02289, 0.19637, 0.04777, 0.13883, 0.19288, 0.07366, 0.07376, 0.11993, 0.07489, 0.05902], \"catMg\": [0.4433, 0.4188, 0.3829, 0.449, 0.5238, 0.399, 0.4841, 0.4725, 0.4199, 0.4706], \"com\": [{\"c\": \"C01\", \"sal\": 1450, \"cm\": 0.03, \"vi\": 620, \"f25\": 456698.94}, {\"c\": \"C02\", \"sal\": 1350, \"cm\": 0.03, \"vi\": 620, \"f25\": 372713.96}, {\"c\": \"C03\", \"sal\": 1300, \"cm\": 0.03, \"vi\": 620, \"f25\": 425919.54}, {\"c\": \"C04\", \"sal\": 1400, \"cm\": 0.03, \"vi\": 620, \"f25\": 385075.25}, {\"c\": \"C05\", \"sal\": 1250, \"cm\": 0.03, \"vi\": 620, \"f25\": 213738.39}, {\"c\": \"C06\", \"sal\": 1250, \"cm\": 0.03, \"vi\": 620, \"f25\": 104431.83}], \"mk\": {\"Anúncios Google (pesquisa)\": {\"cpl\": 41.94, \"conv\": 0.02688, \"orc\": 3900.0}, \"Anúncios Meta (Instagram e Facebook)\": {\"cpl\": 40.27, \"conv\": 0.01892, \"orc\": 4967.0}, \"Email marketing e catálogo\": {\"cpl\": 25.45, \"conv\": 0.03636, \"orc\": 1400.0}, \"Feira profissional\": {\"cpl\": 62.21, \"conv\": 0.02488, \"orc\": 13333.0}, \"Parcerias com influenciadores de estética\": {\"cpl\": 46.71, \"conv\": 0.0173, \"orc\": 6750.0}, \"Programa de amostras\": {\"cpl\": 55.4, \"conv\": 0.03756, \"orc\": 5900.0}}, \"mkcor\": 38900.0, \"est\": {\"compra\": 596.096619047619, \"ret\": 0.875, \"el\": 1.9864072586788433, \"an\": -0.18616297968536533}};\n",
-    "const MN=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];\n",
-    "const sum=a=>a.reduce((x,y)=>x+y,0), avg=a=>sum(a)/a.length, cl=o=>JSON.parse(JSON.stringify(o));\n",
-    "const eur=n=>Math.round(n).toLocaleString('pt-PT').replace(/[\\u00a0\\u202f]/g,' ')+' €', pc=n=>(n*100).toFixed(1).replace('.',',')+'%';\n",
-    "const DEP=[['Gerência e administração',1,3900],['Direção comercial e formação técnica',2,2250],['Vendas internas e apoio ao cliente',2,1050],['Marketing',2,1500],['Logística e armazém',6,1056.67],['Financeiro e administrativo',3,1436.67]];\n",
-    "const CH=Object.keys(D.mk);\n",
-    "function cfg0(){const p=cl(D.cfg);return{p,meta:p.META_CRESC,mi:p.MES_INICIO,ref:'C06',man:15000,saz:true,dep:DEP.map(x=>({n:x[0],q:x[1],s:x[2]})),com:cl(D.com),mg:cl(D.catMg),mk:cl(D.mk)}}\n",
-    "function sc0(mi){return{p1:[0,1].map(()=>({n:0,h:mi})),p2:[0,1,2].map(()=>({ch:CH[0],b:0,t:mi})),p3:[0,1,2].map(()=>({d:0,t:mi,n:1,cats:[]}))}}\n",
-    "function calc(c,s){\n",
-    " const p=c.p,h25=D.h25,h26=D.h26,mi=c.mi,nA=Math.min(mi-1,h26.length),warn=[];\n",
-    " const acum=sum(h26.slice(0,nA)),g=acum/sum(h25.slice(0,nA))-1,meta=sum(h25)*(1+c.meta);\n",
-    " const fb=m=>m<=nA?h26[m-1]:h25[m-1]*(1+g);\n",
-    " const nc=D.cats.length,W=D.catW,mp=sum(W.map((w,i)=>w*c.mg[i]));\n",
-    " const cwK=(m,K)=>sum(K.map(i=>D.catM[i][m-1]))/sum(D.cats.map((_,i)=>D.catM[i][m-1]));\n",
-    " const mK=(m,K)=>sum(K.map(i=>D.catM[i][m-1]*c.mg[i]))/sum(K.map(i=>D.catM[i][m-1]));\n",
-    " const S=m=>!c.saz?1:(c.ref==='C06'?h25[m-1]/avg(h25.slice(0,6)):h25[m-1]/avg(h25));\n",
-    " const ref=c.ref==='C06'?p.FV_PROD_C06:c.ref==='EXP'?p.FV_PROD_EXPERIENTE:c.man;\n",
-    " const ramp=[1,2,3,4,5,6,7,8,9,10].map(i=>p['FV_RAMPA_'+i]);\n",
-    " const cm=p.FV_SAL_BASE*p.N_PAG/12*(1+p.TSU_EP+p.SEG_AT)+p.SUB_ALIM_DIA*p.DIAS_UTEIS_ANO/12+p.FV_VIATURA+p.FV_AJUDAS+p.FV_COMUNIC;\n",
-    " const ent=p.FV_RECRUT+p.FV_FORMACAO+p.FV_EQUIP,tr=p.TRANSP_PCT;\n",
-    " const z=()=>Array(13).fill(0);const F=[z(),z(),z()],C=[z(),z(),z()],Mg=[z(),z(),z()];let desc=0,v24=0,nxt=0;\n",
-    " const mkV=(ch,b,t,m)=>{const k=c.mk[ch],d=t+(ch.includes('Email')?0:1);if(m<d||b<=0)return 0;\n",
-    "  const cpl=b>k.orc?k.cpl*(1+p.MKT_REND_DECR*Math.log2(b/k.orc)):k.cpl,nn=b/cpl*k.conv,j=m-d+1;return nn*p.MKT_COMPRA_NOVO*(j<=6?1:p.MKT_RETENCAO_6M)};\n",
-    " s.p1.forEach(v=>{if(v.n<=0)return;for(let m=v.h;m<=v.h+23;m++){const k=m-v.h+1,mm=(m-1)%12+1;\n",
-    "  const f=v.n*ref*S(mm)*ramp[Math.min(k,10)-1]*(1-p.FV_CANIB),co=v.n*cm+p.FV_COMISSAO*f+(k==1?v.n*ent:0);\n",
-    "  v24+=f*mp-co-tr*f;if(m<=12){F[0][m]+=f;C[0][m]+=co;Mg[0][m]+=f*mp}}});\n",
-    " s.p2.forEach(v=>{if(v.b<=0)return;for(let m=v.t;m<=v.t+23;m++){const mm=(m-1)%12+1,f=mkV(v.ch,v.b,v.t,m)*S(mm)/S(mm);\n",
-    "  const f2=f,co=m==v.t?v.b:0;v24+=f2*mp-co-tr*f2;if(m<=12){F[1][m]+=f2;C[1][m]+=co;Mg[1][m]+=f2*mp}}});\n",
-    " const used={};\n",
-    " s.p3.forEach((v,ix)=>{if(v.d<=0||!v.cats.length||v.n<1)return;const K=v.cats,d=v.d,E=p.PRM_ELAST;C[2][v.t]+=p.PRM_CUSTO_FIXO;\n",
-    "  for(let j=0;j<v.n&&v.t+j<=12;j++){const m=v.t+j;K.forEach(i=>{const key=m+'-'+i;if(used[key])warn.push('Categoria '+D.cats[i]+' repetida em '+MN[m-1]);used[key]=1});\n",
-    "   const Fk=fb(m)*cwK(m,K),mk=mK(m,K),fat=Fk*(1-d)*(1+E*d),cg=Fk*(1+E*d)*(1-mk);\n",
-    "   F[2][m]+=fat-Fk;Mg[2][m]+=fat-cg-Fk*mk;desc+=Fk*(1+E*d)*d;\n",
-    "   if(m==11&&d+0.25>p.PRM_DESC_MAX)warn.push('Novembro: desconto + Black Friday (25%) excede o máximo de '+pc(p.PRM_DESC_MAX))}\n",
-    "  const m2=v.t+v.n,last=v.t+v.n-1;if(m2<=12){const loss=fb(m2)*cwK(m2,K)*p.PRM_ANTECIP;F[2][m2]-=loss;Mg[2][m2]-=loss*mK(m2,K)}\n",
-    "  else if(last>=12){nxt+=h25[0]*(1+g)*cwK(1,K)*p.PRM_ANTECIP*(1-mK(1,K))}});\n",
-    " const T=(A)=>sum(A.map(x=>sum(x)));const fatInc=T(F),marg=T(Mg),cost=T(C),transp=tr*fatInc,res=marg-cost-transp;\n",
-    " const mon=[];for(let m=1;m<=12;m++)mon.push({m,base:fb(m),p1:F[0][m],p2:F[1][m],p3:F[2][m],sim:fb(m)+F[0][m]+F[1][m]+F[2][m],meta:h25[m-1]*(1+c.meta),nec:m>=mi?h25[m-1]*(1+c.meta)*(1)-0:0});\n",
-    " const fatBase=sum(mon.map(x=>x.base)),fat=fatBase+fatInc;\n",
-    " const ps=(p.N_PAG*(1+p.TSU_EP+p.SEG_AT)),pers=sum(c.dep.map(d=>d.q*(d.s*ps+p.SUB_ALIM_DIA*p.DIAS_UTEIS_ANO)))+sum(c.com.map(x=>x.sal*ps+p.SUB_ALIM_DIA*p.DIAS_UTEIS_ANO));\n",
-    " const gasto=pers+12*(p.CF_RENDAS+p.CF_ENERGIA+p.CF_COMUNIC+p.CF_SEGUROS+p.CF_OUTROS+p.CF_FROTA_LOG)+c.com.length*p.FV_VIATURA*12+tr*fatBase+sum(c.com.map(x=>x.cm*x.f25*(1+g)))+D.mkcor;\n",
-    " const opSem=fatBase*mp-gasto,nT=sum(c.dep.map(d=>d.q))+c.com.length;\n",
-    " return{g,meta,acum,fatBase,fat,mon,mp,cm,ent,warn:[...new Set(warn)],pers,gasto,nT,ref,desvio:meta-fatBase,cf:p.CF_RENDAS+p.CF_ENERGIA+p.CF_COMUNIC+p.CF_SEGUROS+p.CF_OUTROS+p.CF_FROTA_LOG,lev:[0,1,2].map(i=>({f:sum(F[i]),c:sum(C[i]),m:sum(Mg[i])})),\n",
-    "  k:{fat,var:fat/sum(h25)-1,dist:meta-fat,distp:(meta-fat)/meta,atg:fat/meta,fatInc,cost,desc,marg,res,roi:res/((cost+desc)||1),ce:(cost+desc)/(fatInc||1),v24,nxt:-nxt,opSem,opCom:opSem+res}}}\n",
-    "if(typeof document==='undefined'){module.exports={cfg0,sc0,calc,CH};}\n",
-    "else{\n",
-    "var c=cfg0(),s=sc0(c.mi),saved=[],ch=null;const $=id=>document.getElementById(id);\n",
-    "const sel=(o,v,cb)=>`<select onchange=\"${cb}\">${o.map(x=>`<option value=\"${x[0]}\"${x[0]==v?' selected':''}>${x[1]}</option>`).join('')}</select>`;\n",
-    "const MO=()=>{const a=[];for(let m=c.mi;m<=12;m++)a.push([m,MN[m-1]]);return a};\n",
-    "window.set=(o,k,v,num)=>{o[k]=num?parseFloat(String(v).replace(',','.'))||0:v;upd()};\n",
-    "const inp=(l,ob,k,pct)=>`<label>${l}<input type=\"number\" step=\"any\" value=\"${pct?+(ob[k]*100).toFixed(4):ob[k]}\" onchange=\"set(window.__o[${reg(ob)}],'${k}',${pct?'this.value/100':'this.value'},1)\"></label>`;\n",
-    "window.__o=[];const reg=o=>{let i=__o.indexOf(o);if(i<0){__o.push(o);i=__o.length-1}return i};\n",
-    "const PG=[['Parâmetros gerais de pessoal',['N_PAG','TSU_EP','SEG_AT','SUB_ALIM_DIA','DIAS_UTEIS_ANO']],['Novo comercial (P1)',['FV_SAL_BASE','FV_COMISSAO','FV_VIATURA','FV_AJUDAS','FV_COMUNIC','FV_RECRUT','FV_FORMACAO','FV_EQUIP','FV_CANIB','FV_PROD_C06','FV_PROD_EXPERIENTE']],['Marketing (P2)',['MKT_COMPRA_NOVO','MKT_RETENCAO_6M','MKT_REND_DECR']],['Promoções (P3)',['PRM_ELAST','PRM_ANTECIP','PRM_CUSTO_FIXO','PRM_DESC_MAX']],['Custos fixos e tesouraria',['CF_RENDAS','CF_ENERGIA','CF_COMUNIC','CF_SEGUROS','CF_OUTROS','CF_FROTA_LOG','TRANSP_PCT','PMR']]];\n",
-    "const PCT=['TSU_EP','SEG_AT','FV_COMISSAO','FV_CANIB','MKT_RETENCAO_6M','MKT_REND_DECR','PRM_ANTECIP','PRM_DESC_MAX','TRANSP_PCT'];\n",
-    "function buildCfg(){__o=[];window.__o=__o;let h=`<h3>Empresa e meta</h3><div class=g><label>Empresa<input value=\"${c.p.EMP_NOME}\" onchange=\"c.p.EMP_NOME=this.value\"></label>`+inp('Meta de crescimento (%)',c,'meta',1)+`<label>Mês de início<select onchange=\"c.mi=+this.value;s=sc0(c.mi);buildAll()\">${Array.from({length:12-D.h26.length},(_,i)=>i+D.h26.length+1).map(m=>`<option value=${m}${m==c.mi?' selected':''}>${MN[m-1]}</option>`).join('')}</select></label></div>`;\n",
-    " PG.forEach(g=>{h+=`<h3>${g[0]}</h3><div class=g>`+g[1].map(k=>inp(LB[k]||k,c.p,k,PCT.includes(k))).join('')+'</div>'});\n",
-    " h+=`<h3>Produtividade de referência</h3><div class=g><label>Referência${sel([['C06','C06 (jan.–jun.)'],['EXP','Média dos experientes'],['MAN','Valor manual']],c.ref,\"c.ref=this.value;upd()\")}</label>`+inp('Valor manual (€/mês)',c,'man')+`<label>Sazonalidade${sel([[1,'Ligada'],[0,'Desligada (S=1)']],c.saz?1:0,\"c.saz=this.value==1;upd()\")}</label></div><h3>Curva de rampa (%)</h3><div class=g>`+[1,2,3,4,5,6,7,8,9,10].map(i=>inp('Mês '+i,c.p,'FV_RAMPA_'+i,1)).join('')+'</div>';\n",
-    " h+='<h3>Departamentos (n.º e salário base médio)</h3><div class=g>'+c.dep.map(d=>inp(d.n+': n.º',d,'q')+inp(d.n+': salário (€)',d,'s')).join('')+'</div><h3>Comerciais atuais (salário, comissão, viatura)</h3><div class=g>'+c.com.map(x=>inp(x.c+': salário (€)',x,'sal')+inp(x.c+': comissão (%)',x,'cm',1)+inp(x.c+': viatura (€)',x,'vi')).join('')+'</div>';\n",
-    " h+='<h3>Margem bruta por categoria (%)</h3><div class=g>'+D.cats.map((n,i)=>inp(n+' ('+pc(D.catW[i])+' da fat.)',c.mg,i,1)).join('')+'</div><h3>Canais de marketing</h3><div class=g>'+CH.map(k=>inp(k.split(' (')[0]+': custo por lead (€)',c.mk[k],'cpl')+inp(k.split(' (')[0]+': conversão (%)',c.mk[k],'conv',1)+inp(k.split(' (')[0]+': orçamento médio (€)',c.mk[k],'orc')).join('')+'</div><p><button onclick=\"c=cfg0();s=sc0(c.mi);buildAll()\">Repor valores do Excel</button></p>';$('cfg').innerHTML=h.split('<h3>').filter(Boolean).map(x=>'<section class=card><h3>'+x+'</section>').join('')}\n",
-    "function buildSc(){__o=window.__o=window.__o||[];const mo=MO();\n",
-    " $('p1').innerHTML='<div class=imp id=i1></div><p class=n>Custo fixo por comercial: <b id=cm></b>/mês + comissão + custos de entrada (<b id=en></b>).</p>'+s.p1.map((v,i)=>`<div class=\"card g\"><label>Vaga ${i+1}: n.º de comerciais<select onchange=\"set(s.p1[${i}],'n',+this.value)\">${[0,1,2,3,4,5,6].map(n=>`<option${n==v.n?' selected':''}>${n}</option>`).join('')}</select></label><label>Mês de entrada${sel(mo,v.h,`set(s.p1[${i}],'h',+this.value)`)}</label></div>`).join('');\n",
-    " $('p2').innerHTML='<div class=imp id=i2></div>'+s.p2.map((v,i)=>`<div class=\"card g\"><label>Campanha ${i+1}: canal${sel(CH.map(k=>[k,k]),v.ch,`set(s.p2[${i}],'ch',this.value)`)}</label><label>Orçamento (€)<input type=number value=${v.b} onchange=\"set(s.p2[${i}],'b',this.value,1)\"></label><label>Mês${sel(mo,v.t,`set(s.p2[${i}],'t',+this.value)`)}</label></div>`).join('');\n",
-    " $('p3').innerHTML='<div class=imp id=i3></div>'+s.p3.map((v,i)=>`<div class=\"card g\"><label>Promoção ${i+1}: desconto (%)<input type=number value=${v.d*100} onchange=\"set(s.p3[${i}],'d',this.value/100,1)\"></label><label>Mês inicial${sel(mo,v.t,`set(s.p3[${i}],'t',+this.value)`)}</label><label>N.º de meses<input type=number min=1 max=6 value=${v.n} onchange=\"set(s.p3[${i}],'n',+this.value)\"></label></div><details><summary>Categorias (${v.cats.length})</summary>${D.cats.map((n,j)=>`<label class=ck><input type=checkbox ${v.cats.includes(j)?'checked':''} onchange=\"tg(${i},${j},this.checked)\"> ${n}</label>`).join('')}<button onclick=\"tgAll(${i})\">Todas</button></details>`).join('')}\n",
-    "window.tg=(i,j,on)=>{const a=s.p3[i].cats;if(on&&!a.includes(j))a.push(j);if(!on)s.p3[i].cats=a.filter(x=>x!=j);upd()};\n",
-    "window.tgAll=i=>{s.p3[i].cats=D.cats.map((_,j)=>j);buildSc();upd()};\n",
-    "window.buildAll=()=>{buildCfg();buildSc();upd()};\n",
-    "const KL=[['fat','Faturação do ano da meta',eur],['var','Variação face ao ano base',pc],['dist','Distância à meta',eur],['distp','Distância à meta (%)',pc],['fatInc','Faturação incremental',eur],['cost','Custos incrementais',eur],['desc','Desconto concedido',eur],['marg','Margem bruta incremental',eur],['res','Resultado incremental',eur],['roi','ROI',x=>x.toFixed(2)],['ce','Custo por € adicional',x=>x.toFixed(2)+' €'],['v24','Valor a 24 meses (P1+P2)',eur],['nxt','Efeito no ano seguinte',eur],['opSem','Resultado operacional sem medidas',eur],['opCom','Resultado operacional com medidas',eur]];\n",
-    "const LB={N_PAG:'Pagamentos de salário por ano',TSU_EP:'TSU da empresa (%)',SEG_AT:'Seguro de acidentes de trabalho (%)',SUB_ALIM_DIA:'Subsídio de alimentação (€/dia)',DIAS_UTEIS_ANO:'Dias úteis por ano',FV_SAL_BASE:'Salário base do novo comercial (€/mês)',FV_COMISSAO:'Comissão sobre vendas (%)',FV_VIATURA:'Viatura (€/mês)',FV_AJUDAS:'Ajudas de custo (€/mês)',FV_COMUNIC:'Comunicações (€/mês)',FV_RECRUT:'Recrutamento (€, único)',FV_FORMACAO:'Formação inicial (€, único)',FV_EQUIP:'Equipamento e amostras (€, único)',FV_CANIB:'Canibalização (%)',FV_PROD_C06:'Produtividade do C06 (€/mês)',FV_PROD_EXPERIENTE:'Produtividade dos experientes (€/mês)',MKT_COMPRA_NOVO:'Compra mensal de novo cliente (€)',MKT_RETENCAO_6M:'Retenção a 6 meses (%)',MKT_REND_DECR:'Rendimentos decrescentes (%)',PRM_ELAST:'Elasticidade promocional',PRM_ANTECIP:'Antecipação no mês seguinte (%)',PRM_CUSTO_FIXO:'Custo fixo por promoção (€)',PRM_DESC_MAX:'Desconto máximo (%)',CF_RENDAS:'Rendas (€/mês)',CF_ENERGIA:'Energia e água (€/mês)',CF_COMUNIC:'Comunicações e software (€/mês)',CF_SEGUROS:'Seguros (€/mês)',CF_OUTROS:'Outros gastos fixos (€/mês)',CF_FROTA_LOG:'Viatura de distribuição (€/mês)',TRANSP_PCT:'Transportes (% da faturação)',PMR:'Prazo médio de recebimento (dias)'};\n",
-    "const KG=[['Impacto na meta',['fat','var','dist','distp']],['Medidas simuladas',['fatInc','cost','desc','marg','res']],['Rentabilidade',['roi','ce','v24','nxt']],['Resultado operacional',['opSem','opCom']]];\n",
-    "const NEG=['res','marg','opCom','v24','nxt'],kl=Object.fromEntries(KL.map(x=>[x[0],x]));\n",
-    "const tile=(l,v,sb,t)=>`<div class=\"tl ${t||''}\"><small>${l}</small><b>${v}</b>${sb?`<em>${sb}</em>`:''}</div>`;\n",
-    "window.upd=()=>{const r=calc(c,s),k=r.k,p=c.p;window.R=r;\n",
-    " if($('cm')){$('cm').textContent=eur(r.cm);$('en').textContent=eur(r.ent)}\n",
-    " const ok=k.fat>=r.meta,pb=Math.min(r.fatBase/r.meta,1),ps=Math.min(k.fat/r.meta,1),tr=p.TRANSP_PCT;\n",
-    " $('hn').textContent=p.EMP_NOME;$('hs').textContent=p.EMP_SETOR+', sede em '+p.EMP_SEDE;$('gv').textContent=eur(r.desvio);\n",
-    " $('gs').innerHTML=ok?`<b>Meta atingida</b> com as medidas (excedente de ${eur(-k.dist)})`:`Com as medidas simuladas ainda faltam <b>${eur(k.dist)}</b>`;\n",
-    " $('gp').innerHTML=`<div class=trk><i style=\"width:${ps*100}%\"></i><u style=\"left:${pb*100}%\"></u></div><div class=tls><span>Sem medidas: ${pc(r.fatBase/r.meta)}</span><span>Com medidas: ${pc(k.atg)}</span><span>Meta: ${eur(r.meta)}</span></div>`;\n",
-    " $('dash').innerHTML='<h2>A empresa</h2><div class=tg>'+tile('Trabalhadores',r.nT,(r.nT-c.com.length)+' nos departamentos e '+c.com.length+' comerciais')+tile('Custo anual com pessoal',eur(r.pers),eur(r.pers/12)+' por mês')+tile('Custos fixos mensais',eur(r.cf),eur(r.cf*12)+' por ano')+tile('Gastos operacionais anuais',eur(r.gasto),'estimativa do ano da meta')+tile('Margem bruta',pc(r.mp),'média ponderada')+`</div><h2>Meta e resultado de ${p.ANO_META}</h2><div class=tg>`+tile('Meta de faturação',eur(r.meta),'+'+pc(c.meta)+' face a '+p.ANO_BASE)+tile('Faturação sem medidas',eur(r.fatBase),'crescimento homólogo de '+pc(r.g))+tile('Resultado operacional sem medidas',eur(k.opSem))+tile('Resultado operacional com medidas',eur(k.opCom),'',k.opCom<k.opSem?'bad':'good')+tile('Efeito das medidas no resultado',eur(k.res),'',k.res<0?'bad':'good')+'</div>';\n",
-    " $('bar').innerHTML=`<b class=\"${ok?'ok':'ko'}\">${ok?'Meta atingida':'Meta não atingida'}</b> (${pc(k.atg)} da meta), ${ok?'excedente de '+eur(-k.dist):'faltam '+eur(k.dist)}`;\n",
-    " $('kp').innerHTML=r.warn.map(w=>`<p class=w>⚠ ${w}</p>`).join('')+KG.map(g=>`<h2>${g[0]}</h2><div class=tg>`+g[1].map(id=>{const v=k[id];return tile(kl[id][1],kl[id][2](v),'',NEG.includes(id)?(v<0?'bad':'good'):(id=='dist'||id=='distp'?(v>0?'bad':'good'):''))}).join('')+'</div>').join('')+'<p class=n>A combinação soma os efeitos das três alavancas (pressuposto de aditividade).</p>';\n",
-    " [1,2,3].forEach((n,i)=>{const e=$('i'+n),l=r.lev[i];if(e)e.innerHTML=`<b>Impacto desta alavanca:</b> ${l.f>=0?'+':''}${eur(l.f)} de faturação, custos de ${eur(l.c)}${i==2?', desconto concedido de '+eur(k.desc):''}, resultado de ${eur(l.m-l.c-tr*l.f)}.`});\n",
-    " $('tb').innerHTML='<tr><th>Mês<th>Base<th>P1<th>P2<th>P3<th>Simulado<th>Necessário</tr>'+r.mon.map(x=>`<tr><td>${MN[x.m-1]}<td>${eur(x.base)}<td>${eur(x.p1)}<td>${eur(x.p2)}<td>${eur(x.p3)}<td>${eur(x.sim)}<td>${x.m>=c.mi?eur(x.meta):'—'}</tr>`).join('');\n",
-    " if(window.Chart){Chart.defaults.color=getComputedStyle(document.body).color;Chart.defaults.font.family='Manrope,system-ui,sans-serif';\n",
-    "  const d=[D.h25,D.h26.concat(Array(12-D.h26.length).fill(null)),r.mon.map(x=>x.base),r.mon.map(x=>x.sim),r.mon.map(x=>x.meta)],nm=['Ano base real','Ano da meta real','Cenário base','Simulado','Meta mensal'],co=['#8a9aa2','#1f7a8c','#e0a030','#1f8a5b','#c4432b'],dh=[[],[],[5,4],[],[2,4]],w=[1.5,2.5,2,3.5,2];\n",
-    "  if(ch)ch.destroy();ch=new Chart($('cv'),{type:'line',data:{labels:MN,datasets:d.map((v,i)=>({label:nm[i],data:v,borderColor:co[i],backgroundColor:co[i],borderWidth:w[i],borderDash:dh[i],pointRadius:i==3?3:1,tension:.25}))},options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8}}},scales:{y:{ticks:{callback:v=>v/1000+' k€'}}}}})}}\n",
-    "const SET={A:()=>{s=sc0(c.mi);s.p1[0]={n:2,h:c.mi}},B:()=>{s=sc0(c.mi);s.p2[0]={ch:CH.find(k=>k.includes('Meta')),b:c.mk[CH.find(k=>k.includes('Meta'))].orc,t:9};const f=CH.find(k=>k.includes('Feira'));s.p2[1]={ch:f,b:c.mk[f].orc,t:10}},C:()=>{s=sc0(c.mi);s.p3[0]={d:.15,t:11,n:2,cats:D.cats.map((_,j)=>j)}},D:()=>{const a=sc0(c.mi);SET.A();const x=s.p1;SET.B();const y=s.p2;SET.C();s.p1=x;s.p2=y},E:()=>{SET.D();c.dep.forEach(d=>d.s*=1.05);c.com.forEach(x=>x.sal*=1.05);c.mg=c.mg.map(m=>m-.01)}};\n",
-    "window.pre=k=>{if(k!='E'||true){c=cfg0()}SET[k]();buildAll()};\n",
-    "window.save=()=>{if(saved.length>=4){alert('Máximo de 4 cenários.');return}\n",
-    " saved.push({n:$('nm').value||'Cenário '+(saved.length+1),k:cl(window.R.k),t:window.R.k.atg,c:(window.me&&window.me.u)||'—'});\n",
-    " $('nm').value='';cmp()};\n",
-    "// Regra 4 — Privilégios de gestão: só o master_admin ou quem criou o cenário o pode remover.\n",
-    "const canDel=i=>window.me&&(window.me.role==='master_admin'||window.me.u===saved[i].c);\n",
-    "window.delSc=i=>{if(!canDel(i))return;if(!confirm('Remover o cenário «'+saved[i].n+'»?'))return;saved.splice(i,1);cmp()};\n",
-    "const cmp=()=>{$('cmpT').innerHTML='<tr><th>Indicador'+saved.map(x=>'<th>'+x.n+'<br><small class=n>por '+x.c+'</small>').join('')+'</tr>'\n",
-    " +KL.map(l=>`<tr><td>${l[1]}`+saved.map(x=>'<td>'+l[2](x.k[l[0]])).join('')+'</tr>').join('')\n",
-    " +`<tr><td>Meta`+saved.map(x=>'<td>'+(x.t>=1?'Atingida':'Não atingida')+' ('+pc(x.t)+')').join('')+'</tr>'\n",
-    " +(saved.length?'<tr><td></td>'+saved.map((x,i)=>'<td>'+(canDel(i)?`<button onclick=\"delSc(${i})\">Apagar</button>`:'')).join('')+'</tr>':'')};\n",
-    "window.cmp=cmp;\n",
-    "window.tab=i=>{document.querySelectorAll('.pg').forEach((e,j)=>e.style.display=j==i?'block':'none');document.querySelectorAll('nav button').forEach((e,j)=>e.className=j==i?'on':'');if(i==4)upd();if(i==7)$('tx').value=snap()};\n",
-    "const fs$=(t,ok)=>{$('fs').textContent=t;$('fs').className='fs '+(ok?'ok':'ko')};\n",
-    "const save=async(name,data)=>{try{const d=window.claude&&await claude.use('downloads');if(!d)return fs$('Neste ambiente não é possível gravar ficheiros. Use «Configuração em texto» para copiar.');await d.save({filename:name,data});fs$('Ficheiro «'+name+'» pronto.',1)}catch(e){fs$(e&&e.code=='declined'?'Gravação cancelada.':'Não foi possível gravar o ficheiro ('+(e&&e.code||'erro')+').')}};\n",
-    "const snap=()=>JSON.stringify({v:1,c,s,hist:{h24:D.h24,h25:D.h25,h26:D.h26,cats:D.cats,catM:D.catM,catW:D.catW,catMg:D.catMg,mkcor:D.mkcor,mk:D.mk,com:D.com}});\n",
-    "const impJ=t=>{try{const o=JSON.parse(t);if(!o.c||!o.s)throw 0;if(o.hist)Object.assign(D,o.hist);CH.splice(0,CH.length,...Object.keys(D.mk));c=o.c;s=o.s;buildAll();fs$('Configuração importada e simulador atualizado.',1)}catch(e){fs$('Ficheiro inválido: use um JSON exportado por este simulador.')}};\n",
-    "const impX=async f=>{if(!window.XLSX)return fs$('A biblioteca de Excel não carregou (ambiente sem acesso à internet).');\n",
-    " try{const wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true}),J=n=>{if(!wb.Sheets[n])throw n;return XLSX.utils.sheet_to_json(wb.Sheets[n])},cf=XLSX.utils.sheet_to_json(wb.Sheets.Configuracao||(()=>{throw'Configuracao'})(),{header:1}),P={},r2=v=>Math.round(v*100)/100;\n",
-    "  cf.forEach(r=>{if(typeof r[0]=='string'&&/^[A-Z][A-Z0-9_]+$/.test(r[0])&&r[2]!=null)P[r[0]]=typeof r[2]=='number'?r[2]:String(r[2])});\n",
-    "  ['RH_GER','RH_DIRCOM','RH_VINT','RH_MKT','RH_LOG','RH_FIN'].forEach((k,i)=>{const r=cf.find(x=>x[0]==k);if(r){DEP[i][1]=r[2];DEP[i][2]=r[3]}});\n",
-    "  const mk={};cf.forEach(r=>{if(/^MKT_/.test(r[0])&&typeof r[6]=='number'&&typeof r[1]=='string')mk[r[1]]={cpl:r2(r[6]),conv:r[7],orc:Math.round(r[9])}});if(Object.keys(mk).length)D.mk=mk;\n",
-    "  Object.assign(D.cfg,P);const yb=+D.cfg.ANO_BASE,ym=+D.cfg.ANO_META,V='Valor líquido (€, sem IVA)',yr={};\n",
-    "  J('Encomendas').forEach(r=>{(yr[r['Ano']]=yr[r['Ano']]||Array(12).fill(0))[r['Mês']-1]+=r[V]||0});\n",
-    "  if(!yr[yb]||!yr[yb-1]||!yr[ym])throw 'anos em falta nas Encomendas';\n",
-    "  D.h24=yr[yb-1].map(r2);D.h25=yr[yb].map(r2);let n=12;while(n>0&&!(yr[ym][n-1]>0))n--;D.h26=yr[ym].slice(0,n).map(r2);\n",
-    "  const cm={},mg={},ft={};J('Linhas_Encomenda').forEach(r=>{if(r['Ano']!=yb)return;const k=r['Categoria'];(cm[k]=cm[k]||Array(12).fill(0))[r['Mês']-1]+=r[V]||0;mg[k]=(mg[k]||0)+(r['Margem bruta (€)']||0);ft[k]=(ft[k]||0)+(r[V]||0)});\n",
-    "  const cats=Object.keys(cm).sort(),tot=sum(cats.map(k=>ft[k]));D.cats=cats;D.catM=cats.map(k=>cm[k].map(Math.round));D.catW=cats.map(k=>ft[k]/tot);D.catMg=cats.map(k=>mg[k]/ft[k]);\n",
-    "  D.com=J('Comerciais').filter(r=>r['Código']!='INT').map(r=>({c:r['Código'],sal:r['Salário base mensal (€)'],cm:r['Comissão sobre vendas (%)'],vi:r['Viatura e combustível (€/mês)'],f25:r['Faturação '+yb+' (€)']||0}));\n",
-    "  D.mkcor=sum(J('Campanhas_Marketing').filter(r=>{const y=new Date(r['Data de início']).getFullYear();return y==yb||y==yb-1}).map(r=>r['Investimento (€)']))/2;\n",
-    "  D.cfg.MES_INICIO=Math.max(+D.cfg.MES_INICIO||7,D.h26.length+1);CH.splice(0,CH.length,...Object.keys(D.mk));c=cfg0();s=sc0(c.mi);buildAll();\n",
-    "  fs$('Excel importado: '+D.h26.length+' meses de '+ym+', '+cats.length+' categorias e '+D.com.length+' comerciais.',1)}catch(e){fs$(typeof e=='string'?'Ficheiro sem a estrutura esperada ('+e+').':'Não foi possível ler o Excel. Use um ficheiro com a mesma estrutura do original.')}};\n",
-    "window.impX=impX;\n",
-    "const n2=v=>typeof v=='number'?v.toFixed(2).replace('.',','):v,HD=['Mês','Ano base real','Ano da meta real','Cenário base','P1','P2','P3','Simulado','Meta mensal'];\n",
-    "const mrows=()=>window.R.mon.map(x=>[MN[x.m-1],D.h25[x.m-1],D.h26[x.m-1]??'',x.base,x.p1,x.p2,x.p3,x.sim,x.meta]);\n",
-    "const csv=()=>save('simulador_mensal.csv','\\ufeff'+[HD].concat(mrows().map(a=>a.map(n2))).map(a=>a.join(';')).join('\\n'));\n",
-    "const xl=()=>{if(!window.XLSX)return fs$('A biblioteca de Excel não carregou. Use a exportação CSV.');const r=window.R,k=r.k,pp=['var','distp'],A=XLSX.utils.aoa_to_sheet,wb=XLSX.utils.book_new(),ad=(a,n)=>XLSX.utils.book_append_sheet(wb,A(a),n);\n",
-    " ad([['Empresa',c.p.EMP_NOME],['Meta de faturação (€)',r.meta],['Faturação sem medidas (€)',r.fatBase],['Desvio a cobrir (€)',r.desvio],['Trabalhadores',r.nT],['Custo anual com pessoal (€)',r.pers],['Custos fixos mensais (€)',r.cf],['Margem bruta ponderada (%)',r.mp*100],['Meta atingida',k.fat>=r.meta?'Sim':'Não'],[],['Indicador','Valor']].concat(KL.map(x=>[x[1]+(pp.includes(x[0])?' (%)':''),pp.includes(x[0])?k[x[0]]*100:k[x[0]]])),'Resumo');\n",
-    " ad([HD].concat(mrows()),'Mensal');\n",
-    " ad([['Medida','Detalhe','Valor']].concat(s.p1.filter(v=>v.n>0).map((v,i)=>['P1 vaga '+(i+1),MN[v.h-1],v.n+' comerciais']),s.p2.filter(v=>v.b>0).map(v=>['P2 '+v.ch,MN[v.t-1],v.b]),s.p3.filter(v=>v.d>0).map((v,i)=>['P3 promoção '+(i+1),MN[v.t-1]+', '+v.n+' mês(es): '+v.cats.map(j=>D.cats[j]).join(', '),v.d*100+'%'])),'Medidas');\n",
-    " if(saved.length)ad([['Indicador'].concat(saved.map(x=>x.n))].concat(KL.map(l=>[l[1]].concat(saved.map(x=>x.k[l[0]])))),'Cenários guardados');\n",
-    " save('simulador_resultados.xlsx',XLSX.write(wb,{bookType:'xlsx',type:'array'}))};\n",
-    "const pick=f=>{if(!f)return;if(/\\.json$/i.test(f.name))f.text().then(impJ);else if(/\\.xls[xm]$/i.test(f.name))impX(f);else fs$('Formato não suportado: use .json ou .xlsx.')};\n",
-    "$('fi').onchange=e=>{pick(e.target.files[0]);e.target.value=''};\n",
-    "const dz=$('dz');dz.onclick=()=>$('fi').click();['dragover','dragenter'].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.add('dv')}));['dragleave','drop'].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.remove('dv')}));dz.addEventListener('drop',e=>pick(e.dataTransfer.files[0]));\n",
-    "$('bj').onclick=()=>save('simulador_configuracao.json',snap());$('bx').onclick=xl;$('bc').onclick=csv;$('bt').onclick=()=>impJ($('tx').value);\n",
-    "$('bcp').onclick=async()=>{try{await navigator.clipboard.writeText($('tx').value)}catch(e){$('tx').select();document.execCommand('copy')}fs$('Configuração copiada.',1)};\n",
-    "buildAll();tab(0);\n",
-    "}\n",
-    "</script>\n",
-    "<script>(async()=>{\n",
-    "const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>\"']/g,c=>'&#'+c.charCodeAt(0)+';'),norm=u=>u.trim().toLowerCase(),wait=ms=>new Promise(r=>setTimeout(r,ms));\n",
-    "const enc=new TextEncoder(),b64=u=>btoa(String.fromCharCode(...u)),unb=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));\n",
-    "const hash=async(pw,salt)=>b64(new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt,iterations:150000},await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveBits']),256)));\n",
-    "// ----- CONFIGURAÇÃO DO FIREBASE: substitua pelos valores do seu projeto -----\n",
-    "// Consola Firebase > Definições do projeto > Geral > As suas apps > Configuração do SDK\n",
-    "const firebaseConfig={apiKey:\"AIzaSyCm5P-H3WGiVIYjUK1oUmb5WaPAIQhhmpA\",authDomain:\"simulador-79d24.firebaseapp.com\",projectId:\"simulador-79d24\",storageBucket:\"simulador-79d24.firebasestorage.app\",messagingSenderId:\"272960377646\",appId:\"1:272960377646:web:e5c0e8237f68f17c80a0bf\"};\n",
-    "const EMAIL_DOMAIN='equipa-simulador.app'; // domínio fictício: o login continua a ser por nome de utilizador, não por email\n",
-    "const toEmail=u=>u+'@'+EMAIL_DOMAIN;\n",
-    "// -----------------------------------------------------------------------------\n",
-    "firebase.initializeApp(firebaseConfig);\n",
-    "const auth=firebase.auth(),dbf=firebase.firestore();\n",
-    "let me=null,mode=0,setup=false,busy=false,registering=false;\n",
-    "const say=(t,ok)=>{$('gm').textContent=t;$('gm').className=ok?'ok':'ko'};\n",
-    "window.gt=m=>{mode=m;$('t1').className=m?'':'on';$('t2').className=m?'on':'';document.querySelectorAll('.rg').forEach(e=>e.style.display=m?'flex':'none');$('go').textContent=m?'Criar utilizador':'Entrar';$('lcs').textContent=setup?'Defina o código da equipa (os colegas vão precisar dele)':'Código da equipa (pedir a um colega)';say('')};\n",
-    "\n",
-    "function enter(uid,x){me={uid,u:x.handle,name:x.name||x.handle,role:x.role};window.me=me;window.userRole=me.role;\n",
-    " document.body.classList.remove('locked');$('lp').value=$('lp2').value=$('lc').value='';say('');\n",
-    " $('ub').innerHTML=`<span>Sessão de <b>${esc(me.name)}</b>${me.role=='master_admin'?' (Admin Master)':''}</span><span><button id=bu data-role-gate=\"master_admin\">Utilizadores</button> <button id=bo>Sair</button></span>`;\n",
-    " $('bo').onclick=()=>auth.signOut();\n",
-    " $('bu').onclick=async()=>{if(!$('up').hidden){$('up').hidden=true;return}await users();$('up').hidden=false};\n",
-    " updateUIBasedOnRole(me.role);\n",
-    " if(window.tab)tab(0);if(window.upd)upd()}\n",
-    "\n",
-    "// Regra 3: mostra/esconde elementos marcados com data-role-gate=\"<role>\" consoante o role atual.\n",
-    "// Hoje só o botão \"Utilizadores\" usa esta marca; para criar separadores futuros como\n",
-    "// \"Administração\" ou \"Definições\", basta acrescentar o mesmo atributo ao elemento.\n",
-    "function updateUIBasedOnRole(role){\n",
-    " document.querySelectorAll('[data-role-gate]').forEach(el=>{el.style.display=(role===el.dataset.roleGate)?'':'none'});\n",
-    " if(window.cmp)window.cmp(); // re-renderiza a tabela de cenários para atualizar os botões de apagar\n",
-    "}\n",
-    "\n",
-    "async function users(){try{const q=await dbf.collection('users').get();\n",
-    " const rl={master_admin:'Admin Master',visitor:'visitante'};\n",
-    " $('up').innerHTML='<div class=card><h3>Utilizadores com acesso</h3>'+q.docs.map(d=>{const x=d.data();return `<div class=ur><span>${esc(x.name)} (${esc(x.handle)}), ${esc(rl[x.role]||x.role)}</span>${d.id!==me.uid?`<button data-u=\"${esc(d.id)}\">Remover</button>`:''}</div>`}).join('')\n",
-    "  +'</div><p class=n>Remover revoga o acesso à base de dados; se quiser apagar também a conta de autenticação, faça-o na consola Firebase &gt; Authentication.</p>'}\n",
-    " catch(e){$('up').innerHTML='<p class=n>Sem permissão para listar utilizadores.</p>'}}\n",
-    "$('up').onclick=async e=>{const u=e.target.dataset&&e.target.dataset.u;if(u&&confirm('Remover o acesso deste utilizador?')){try{await dbf.doc('users/'+u).delete();await users()}catch(x){say('Não foi possível remover.')}}};\n",
-    "\n",
-    "async function login(){const u=norm($('lu').value),p=$('lp').value;\n",
-    " try{await auth.signInWithEmailAndPassword(toEmail(u),p)}\n",
-    " catch(e){await wait(800);say('Nome de utilizador ou palavra-passe incorretos.')}}\n",
-    "\n",
-    "async function reg(){const u=norm($('lu').value),p=$('lp').value,c=$('lc').value;\n",
-    " if(!/^[a-z0-9._-]{3,24}$/.test(u))return say('Nome de utilizador: 3 a 24 caracteres (letras, números, ponto, hífen ou _).');\n",
-    " if(p.length<8)return say('A palavra-passe deve ter pelo menos 8 caracteres.');\n",
-    " if(p!==$('lp2').value)return say('As palavras-passe não coincidem.');\n",
-    " if(!c)return say('Indique o código da equipa.');\n",
-    " try{\n",
-    "  // Regra 1 — Registo Inteligente: query à coleção users (limite 1) ANTES de gravar.\n",
-    "  // Coleção vazia → este utilizador é o 'master_admin'; caso contrário → 'visitor'.\n",
-    "  const first=(await dbf.collection('users').limit(1).get()).empty,t=await dbf.doc('meta/team').get();let admin=false;\n",
-    "  if(first&&!t.exists){admin=true}\n",
-    "  else{if(!t.exists)return say('Falta o código da equipa. Peça ao administrador.');const x=t.data();if(await hash(c,unb(x.salt))!==x.hash){await wait(800);return say('Código da equipa incorreto.')}}\n",
-    "  registering=true;\n",
-    "  const cred=await auth.createUserWithEmailAndPassword(toEmail(u),p);\n",
-    "  if(admin){const s=crypto.getRandomValues(new Uint8Array(16));await dbf.doc('meta/team').set({salt:b64(s),hash:await hash(c,s)})}\n",
-    "  const rec={handle:u,name:$('ln').value.trim()||u,role:admin?'master_admin':'visitor',created:new Date().toISOString()};\n",
-    "  await dbf.doc('users/'+cred.user.uid).set(rec);setup=false;enter(cred.user.uid,rec)\n",
-    " }catch(e){\n",
-    "  const m=e&&e.code=='auth/email-already-in-use'?': esse nome de utilizador já existe.':e&&e.code=='auth/weak-password'?': palavra-passe demasiado fraca para o Firebase.':'';\n",
-    "  say('Não foi possível criar o utilizador'+m+(m?'':' ('+(e&&e.code||'erro')+').'))}\n",
-    " finally{registering=false}}\n",
-    "\n",
-    "$('go').onclick=async()=>{if(busy)return;busy=true;$('go').disabled=true;await(mode?reg():login());busy=false;$('go').disabled=false};\n",
-    "document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.body.classList.contains('locked'))$('go').click()});\n",
-    "\n",
-    "auth.onAuthStateChanged(async user=>{\n",
-    " if(!user){me=null;window.me=null;window.userRole=null;document.body.classList.add('locked');$('up').hidden=true;updateUIBasedOnRole(null);return}\n",
-    " if(registering)return; // reg() escreve o perfil e entra diretamente, para evitar corrida com esta verificação\n",
-    " // Regra 2 — Leitura de Permissões no Login: getDoc do utilizador em \"users\" para extrair o role.\n",
-    " try{const d=await dbf.doc('users/'+user.uid).get();\n",
-    "  if(!d.exists){say('A sua conta foi removida pelo administrador.');await auth.signOut();return}\n",
-    "  enter(user.uid,d.data()) // guarda o role em window.me.role / window.userRole e chama updateUIBasedOnRole()\n",
-    " }catch(e){say('Não foi possível validar a sessão. Verifique a ligação à internet.')}});\n",
-    "\n",
-    "try{setup=(await dbf.collection('users').limit(1).get()).empty}catch(e){say('Não foi possível ligar à base de dados Firebase. Confirme firebaseConfig e as regras do Firestore.')}\n",
-    "gt(setup?1:0);if(setup)say('Ainda não há utilizadores: crie o primeiro (será o Admin Master).',1);\n",
-    "})();\n",
-    "</script></body></html>"
-   ]
-  }
- ],
- "metadata": {
-  "language_info": {
-   "name": "python"
-  }
- },
- "nbformat": 4,
- "nbformat_minor": 5
+<!DOCTYPE html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Simulador: crescer 15% até ao final do ano</title>
+<!-- Versão Firebase: aloje este ficheiro fora do claude.ai (p.ex. Firebase Hosting, GitHub Pages) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap"><style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#edf0f2;--cd:#fff;--soft:#f4f7f8;--fg:#16262d;--mu:#5d6c74;--bd:#d5dce0;--hero:#12303b;--ac:#1f7a8c;--am:#e0a030;--ok:#1f8a5b;--ko:#c4432b}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10171a;--cd:#182126;--soft:#111a1e;--fg:#e6ecee;--mu:#8fa0a8;--bd:#2a373d;--hero:#0c2027;--ac:#56b6c9;--am:#f0b84a;--ok:#4cc38a;--ko:#ff8f78}}
+:root[data-theme="dark"]{--bg:#10171a;--cd:#182126;--soft:#111a1e;--fg:#e6ecee;--mu:#8fa0a8;--bd:#2a373d;--hero:#0c2027;--ac:#56b6c9;--am:#f0b84a;--ok:#4cc38a;--ko:#ff8f78}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 90px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+.wrap{max-width:1000px;margin:auto;padding:0 14px}
+.hero{background:var(--hero);color:#f3f7f8;padding:20px 0 22px;border-radius:0 0 18px 18px}
+.hero h1{font-size:20px;font-weight:800;margin:0;letter-spacing:-.01em}.hs{font-size:13px;opacity:.75;margin-top:2px}
+.gap{margin-top:18px;display:grid;gap:14px}.gl{display:block;font-size:13px;opacity:.8}
+#gv{display:block;font-size:40px;font-weight:800;line-height:1.1;color:var(--am);letter-spacing:-.02em}.gs{font-size:13px;opacity:.9}.gs b{color:#fff}
+.trk{position:relative;height:10px;border-radius:5px;background:rgba(255,255,255,.18);margin-top:4px}.trk i{position:absolute;inset:0 auto 0 0;background:var(--am);border-radius:5px}
+.trk u{position:absolute;top:-4px;bottom:-4px;width:2px;background:#fff}.tls{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11.5px;opacity:.85;margin-top:6px}
+@media(min-width:760px){.gap{grid-template-columns:1fr 1.5fr;align-items:end}}
+h2{font-size:15px;font-weight:700;margin:16px 0 8px}h3{font-size:14px;font-weight:700;margin:0 0 10px}
+.tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.tl{background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}.tl small{display:block;color:var(--mu);font-size:12px;line-height:1.3}
+.tl b{display:block;font-size:18px;font-weight:700;margin-top:2px}.tl em{display:block;font-style:normal;font-size:11.5px;color:var(--mu);line-height:1.3;margin-top:2px}.tl.good b{color:var(--ok)}.tl.bad b{color:var(--ko)}
+.stk{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--cd);border-bottom:1px solid var(--bd);margin-top:16px}
+nav{display:flex;overflow-x:auto;max-width:1000px;margin:auto;padding:0 8px}
+nav button{border:0;border-bottom:3px solid transparent;border-radius:0;background:none;color:var(--mu);padding:11px 10px 8px;font-weight:600;font-size:14px}nav button.on{color:var(--fg);border-color:var(--ac)}
+#bar{max-width:1000px;margin:auto;padding:6px 14px;font-size:12.5px;color:var(--mu);border-top:1px solid var(--bd)}
+button{font:inherit;background:var(--cd);color:var(--fg);border:1px solid var(--bd);border-radius:8px;padding:7px 12px;cursor:pointer}button:hover{border-color:var(--ac)}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:14px 0 0}.chips button{border-radius:999px;font-size:13px}
+.pg{max-width:1000px;margin:auto;padding:14px 14px 28px}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:12px}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+label{display:flex;flex-direction:column;font-size:12px;color:var(--mu);gap:3px;font-weight:600}
+input,select{font:inherit;font-size:16px;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--soft);color:var(--fg);width:100%;min-height:40px}
+.imp{background:var(--cd);border:1px solid var(--bd);border-left:4px solid var(--am);border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:12px}
+.tw{overflow-x:auto}.tw.card{padding:6px}table{border-collapse:collapse;width:100%;font-size:13px}td,th{border-bottom:1px solid var(--bd);padding:6px 8px;text-align:right;white-space:nowrap}td:first-child,th:first-child{text-align:left}th{color:var(--mu);font-weight:600}
+.n{color:var(--mu);font-size:12.5px}.w{color:var(--ko);font-weight:600}.ok{color:var(--ok)}.ko{color:var(--ko)}
+details{background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:8px 12px;margin:-4px 0 12px}summary{cursor:pointer;font-size:13px;font-weight:600}
+.ck{flex-direction:row;align-items:center;gap:8px;font-size:13px;color:var(--fg);font-weight:400;padding:3px 0}.ck input{width:auto;min-height:0}
+body.locked{overflow:hidden}body.locked>*:not(#gate):not(script){display:none!important}
+#gate{display:none;min-height:100vh;align-items:center;justify-content:center;padding:20px;background:var(--hero)}body.locked #gate{display:flex}
+.gbox{background:var(--cd);border-radius:16px;padding:22px;width:100%;max-width:400px}.gbox h1{font-size:20px;margin:0 0 4px}.gbox label{margin-top:10px}.rg{display:none}
+.seg{display:flex;gap:4px;background:var(--soft);padding:4px;border-radius:10px;margin:14px 0 4px}.seg button{flex:1;border:0;background:none;border-radius:8px}.seg button.on{background:var(--cd);box-shadow:0 1px 3px rgba(0,0,0,.2);font-weight:700}
+.pri{background:var(--hero);color:#fff;border-color:var(--hero);width:100%;margin-top:14px;padding:11px;font-weight:700}.pri:disabled{opacity:.6}#gm{min-height:20px;font-size:13px;margin:10px 0 0}
+.ub{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;margin-bottom:12px}.ub button{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.3);padding:4px 10px;font-size:12px}
+.ur{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bd);font-size:13px}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}.fb{display:flex;flex-wrap:wrap;gap:8px}.fb button{padding:9px 14px}
+.dz{border:2px dashed var(--bd);border-radius:12px;padding:24px 12px;text-align:center;cursor:pointer;display:grid;gap:4px;background:var(--soft)}.dz:hover,.dz.dv{border-color:var(--ac);background:var(--cd)}
+textarea{width:100%;font:12px/1.4 ui-monospace,Menlo,monospace;background:var(--soft);color:var(--fg);border:1px solid var(--bd);border-radius:8px;padding:8px;margin-bottom:8px}.fs{min-height:22px;font-size:13px;font-weight:600;margin:10px 0}
+</style></head><body class=locked>
+<div id=gate><div class=gbox><h1>Simulador de apoio à decisão</h1><p class=n>Acesso reservado à equipa. Entre ou crie o seu utilizador.</p>
+<div class=seg><button id=t1 onclick=gt(0)>Entrar</button><button id=t2 onclick=gt(1)>Criar utilizador</button></div>
+<div id=gf><label>Nome de utilizador<input id=lu autocomplete=username autocapitalize=none></label><label>Palavra-passe<input id=lp type=password autocomplete=current-password></label>
+<label class=rg>Confirmar palavra-passe<input id=lp2 type=password autocomplete=new-password></label><label class=rg>Nome a mostrar (opcional)<input id=ln></label><label class=rg><span id=lcs>Código da equipa</span><input id=lc type=password autocomplete=off></label>
+<button id=go class=pri>Entrar</button></div><p id=gm></p></div></div>
+
+<header class=hero><div class=wrap><div id=ub class=ub></div><h1 id=hn></h1><div id=hs class=hs></div><div class=gap><div><span class=gl>Desvio a cobrir com as medidas</span><b id=gv></b><span id=gs class=gs></span></div><div id=gp></div></div></div></header>
+<section id=up class=wrap hidden></section><main class=wrap id=dash></main>
+<div class=stk><nav><button onclick=tab(0)>Configurar empresa</button><button onclick=tab(1)>P1 Vendas</button><button onclick=tab(2)>P2 Marketing</button><button onclick=tab(3)>P3 Promoções</button><button onclick=tab(4)>Resultados</button><button onclick=tab(5)>Comparar</button><button onclick=tab(6)>Fórmulas</button><button onclick=tab(7)>Ficheiros</button></nav><div id=bar></div></div>
+<div class=pg id=cfg></div><div class=pg id=p1></div><div class=pg id=p2></div><div class=pg id=p3></div>
+<div class=pg><p class=chips><b>Cenários de teste:</b> <button onclick="pre('A')">A (P1)</button> <button onclick="pre('B')">B (P2)</button> <button onclick="pre('C')">C (P3)</button> <button onclick="pre('D')">D (A+B+C)</button> <button onclick="pre('E')">E (D com custos +5%, margem −1 p.p.)</button></p>
+<div id=kp></div><h2>Faturação mensal (€)</h2><div class=card style="height:320px"><canvas id=cv></canvas></div><h2>Contributo mensal das medidas</h2><div class="tw card"><table id=tb></table></div>
+<h2>Guardar cenário (máx. 4)</h2><div class=g><input id=nm placeholder="Nome do cenário"><button onclick=save()>Guardar</button></div></div>
+<div class=pg><div class="tw card"><table id=cmpT></table></div><p class=n>Guarde cenários no separador Resultados. O estado fica só em memória.</p></div>
+<div class=pg>
+<h3>Regras do modelo</h3><ul class=n>
+<li>Meta = faturação do ano base × (1 + meta). g = crescimento homólogo acumulado (meses reais). Cenário base = mês do ano base × (1 + g).</li>
+<li>P1: F = n × REF × S(m) × rampa(k) × (1 − canibalização); custo = n × custo mensal + comissão × F; no mês de entrada + custos únicos. S(m) = fat. do mês ÷ média (jan.–jun. se ref. C06; anual nos outros casos).</li>
+<li>P2: custo por lead efetivo = CPL × (1 + rend. decr. × log2(B ÷ orçamento médio)) se B &gt; orçamento médio; novos clientes = B ÷ CPL efetivo × conversão; compram após o desfasamento: compra média nos 6 primeiros meses e × retenção a partir do 7.º.</li>
+<li>P3: F = Fbase_K × (1 − d) × (1 + elasticidade × d); custo das mercadorias = Fbase_K × (1 + elast. × d) × (1 − margem); mês seguinte: quebra = Fbase_K × antecipação (se for janeiro seguinte, mostra-se em «efeito no ano seguinte»).</li>
+<li>Resultado incremental = margem bruta incremental − custos − transportes % × faturação incremental. ROI = resultado ÷ (custos + desconto). A combinação soma os efeitos (aditividade).</li>
+<li>Valor a 24 meses: resultado incremental de P1 e P2 durante 24 meses. Resultado operacional = base × margem ponderada − gastos operacionais base + resultado incremental.</li></ul>
+<h3>Origem dos parâmetros (Excel vs estimativa)</h3><div class=tw><table><tr><th>Parâmetro<th>Excel<th>Estimado<th>Fiabilidade</tr>
+<tr><td>Compra mensal de novo cliente<td>580 €<td>596 €<td>35 clientes</tr><tr><td>Retenção a 6 meses<td>80%<td>87,5%<td>24 clientes</tr>
+<tr><td>Elasticidade promocional<td>2,3<td>1,99<td>1 promoção</tr><tr><td>Antecipação<td>12%<td>18,6% (quebra em agosto)<td>1 promoção</tr>
+<tr><td>Produtividade experientes / C06<td>30 902 / 15 527 €<td>30 902 / 15 527 €<td>coincide</tr></table></div>
+<p class=n>Valores iniciais: Excel. Qualquer alteração feita em «Configurar empresa» é da equipa. Estimativas com poucos casos: usar com prudência.</p></div>
+<div class=pg><div class=fgrid>
+<section class=card><h3>Exportar</h3><p class=n>Guarde a configuração para a partilhar com a equipa, ou os resultados para trabalhar em Excel.</p><div class=fb><button id=bj>Configuração (JSON)</button><button id=bx>Resultados (Excel)</button><button id=bc>Meses (CSV)</button></div></section>
+<section class=card><h3>Importar</h3><div id=dz class=dz><b>Largue aqui um ficheiro</b><span class=n>ou toque para escolher: configuração (.json) ou Excel atualizado (.xlsx)</span></div><input id=fi type=file accept=".json,.xlsx,.xlsm" hidden></section></div>
+<p id=fs class=fs></p>
+<section class=card><h3>Configuração em texto</h3><p class=n>Alternativa se o navegador bloquear descargas: copie o texto, ou cole aqui um texto exportado e importe.</p><textarea id=tx rows=6 spellcheck=false></textarea><div class=fb><button id=bcp>Copiar</button><button id=bt>Importar texto</button></div></section>
+<p class=n>O Excel importado deve ter a mesma estrutura do original (folhas Configuracao, Encomendas, Linhas_Encomenda, Comerciais e Campanhas_Marketing). Importar substitui a configuração atual.</p></div>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>const D={"cfg": {"EMP_NOME": "Âmbar e Sal, Distribuição de Cosmética Profissional, Lda.", "EMP_SETOR": "Distribuição grossista de cosmética e produtos de estética profissional", "EMP_SEDE": "Maia (distrito do Porto)", "EMP_EQUIPA": "[preencher]", "DATA_REF": "2026-06-30 00:00:00", "ANO_BASE": 2025.0, "ANO_META": 2026.0, "META_CRESC": 0.15, "MES_INICIO": 7.0, "IVA": 0.23, "N_PAG": 14.0, "TSU_EP": 0.2375, "SEG_AT": 0.015, "SUB_ALIM_DIA": 9.0, "DIAS_UTEIS_ANO": 220.0, "FV_SAL_BASE": 1250.0, "FV_COMISSAO": 0.03, "FV_VIATURA": 620.0, "FV_AJUDAS": 220.0, "FV_COMUNIC": 45.0, "FV_RECRUT": 2500.0, "FV_FORMACAO": 1800.0, "FV_EQUIP": 1500.0, "FV_CANIB": 0.1, "FV_CUSTO_MENSAL": 2876.5625, "FV_CUSTO_ENTRADA": 5800.0, "FV_PROD_EXPERIENTE": 30902.4346666667, "FV_PROD_C06": 15526.6783333333, "FV_PROD_REF": 15526.6783333333, "FV_RAMPA_1": 0.07, "FV_RAMPA_2": 0.2, "FV_RAMPA_3": 0.35, "FV_RAMPA_4": 0.5, "FV_RAMPA_5": 0.6, "FV_RAMPA_6": 0.7, "FV_RAMPA_7": 0.8, "FV_RAMPA_8": 0.9, "FV_RAMPA_9": 0.95, "FV_RAMPA_10": 1.0, "MKT_COMPRA_NOVO": 580.0, "MKT_RETENCAO_6M": 0.8, "MKT_REND_DECR": 0.15, "MKT_META": 3.0, "MKT_GOOGLE": 2.0, "MKT_EMAIL": 2.0, "MKT_FEIRA": 3.0, "MKT_AMOSTRAS": 2.0, "MKT_INFLU": 2.0, "PRM_ELAST": 2.3, "PRM_ANTECIP": 0.12, "PRM_CUSTO_FIXO": 900.0, "PRM_DESC_MAX": 0.3, "MARG_BRUTA": 0.455030765242338, "CF_RENDAS": 5350.0, "CF_ENERGIA": 1150.0, "CF_COMUNIC": 780.0, "CF_SEGUROS": 420.0, "CF_OUTROS": 950.0, "CF_FROTA_LOG": 750.0, "TRANSP_PCT": 0.025, "PMR": 45.0, "CUSTO_PESSOAL_MES": 50609.2021125}, "h24": [130972.16, 136137.08, 161402.06, 173124.95, 203523.89, 205453.81, 189672.28, 120164.94, 165334.93, 164704.06, 217445.85, 227158.18], "h25": [133254.99, 139062.29, 164116.96, 188659.52, 204591.06, 196834.19, 203922.98, 130554.38, 189749.15, 189301.54, 248261.87, 250165.23], "h26": [137548.77, 148094.68, 174348.12, 189346.6, 216489.35, 210323.06], "cats": ["Barbearia", "Cabelo", "Cofres de oferta", "Cuidado de corpo", "Cuidado de rosto", "Estética profissional", "Maquilhagem", "Perfumaria", "Solares", "Unhas"], "catM": [[2947.0, 3438.0, 3876.0, 2963.0, 4034.0, 4572.0, 4458.0, 2891.0, 5959.0, 5869.0, 6067.0, 4167.0], [28802.0, 26882.0, 34376.0, 38857.0, 35873.0, 37411.0, 40187.0, 25201.0, 38164.0, 41288.0, 49053.0, 43479.0], [1953.0, 2364.0, 3321.0, 5094.0, 13902.0, 3018.0, 2472.0, 978.0, 1896.0, 8555.0, 27092.0, 36282.0], [22271.0, 21388.0, 26809.0, 27136.0, 25530.0, 25318.0, 31208.0, 16373.0, 27243.0, 29057.0, 32081.0, 26354.0], [34937.0, 31912.0, 31908.0, 42070.0, 36177.0, 35227.0, 33626.0, 28004.0, 41363.0, 37000.0, 40442.0, 39098.0], [8734.0, 11645.0, 12041.0, 16235.0, 17657.0, 15203.0, 19130.0, 10631.0, 15008.0, 13185.0, 14148.0, 11264.0], [9122.0, 11586.0, 13622.0, 12233.0, 12831.0, 15527.0, 10899.0, 9030.0, 13834.0, 15281.0, 19164.0, 21975.0], [14292.0, 16439.0, 19789.0, 18045.0, 25292.0, 15668.0, 13612.0, 12325.0, 18319.0, 19957.0, 39931.0, 54796.0], [2890.0, 2377.0, 9060.0, 16335.0, 23281.0, 33958.0, 37699.0, 16238.0, 13602.0, 4994.0, 4886.0, 2318.0], [7306.0, 11031.0, 9316.0, 9692.0, 10015.0, 10932.0, 10632.0, 8884.0, 14362.0, 14116.0, 15400.0, 10433.0]], "catW": [0.02289, 0.19637, 0.04777, 0.13883, 0.19288, 0.07366, 0.07376, 0.11993, 0.07489, 0.05902], "catMg": [0.4433, 0.4188, 0.3829, 0.449, 0.5238, 0.399, 0.4841, 0.4725, 0.4199, 0.4706], "com": [{"c": "C01", "sal": 1450, "cm": 0.03, "vi": 620, "f25": 456698.94}, {"c": "C02", "sal": 1350, "cm": 0.03, "vi": 620, "f25": 372713.96}, {"c": "C03", "sal": 1300, "cm": 0.03, "vi": 620, "f25": 425919.54}, {"c": "C04", "sal": 1400, "cm": 0.03, "vi": 620, "f25": 385075.25}, {"c": "C05", "sal": 1250, "cm": 0.03, "vi": 620, "f25": 213738.39}, {"c": "C06", "sal": 1250, "cm": 0.03, "vi": 620, "f25": 104431.83}], "mk": {"Anúncios Google (pesquisa)": {"cpl": 41.94, "conv": 0.02688, "orc": 3900.0}, "Anúncios Meta (Instagram e Facebook)": {"cpl": 40.27, "conv": 0.01892, "orc": 4967.0}, "Email marketing e catálogo": {"cpl": 25.45, "conv": 0.03636, "orc": 1400.0}, "Feira profissional": {"cpl": 62.21, "conv": 0.02488, "orc": 13333.0}, "Parcerias com influenciadores de estética": {"cpl": 46.71, "conv": 0.0173, "orc": 6750.0}, "Programa de amostras": {"cpl": 55.4, "conv": 0.03756, "orc": 5900.0}}, "mkcor": 38900.0, "est": {"compra": 596.096619047619, "ret": 0.875, "el": 1.9864072586788433, "an": -0.18616297968536533}};
+const MN=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const sum=a=>a.reduce((x,y)=>x+y,0), avg=a=>sum(a)/a.length, cl=o=>JSON.parse(JSON.stringify(o));
+const eur=n=>Math.round(n).toLocaleString('pt-PT').replace(/[\u00a0\u202f]/g,' ')+' €', pc=n=>(n*100).toFixed(1).replace('.',',')+'%';
+const DEP=[['Gerência e administração',1,3900],['Direção comercial e formação técnica',2,2250],['Vendas internas e apoio ao cliente',2,1050],['Marketing',2,1500],['Logística e armazém',6,1056.67],['Financeiro e administrativo',3,1436.67]];
+const CH=Object.keys(D.mk);
+function cfg0(){const p=cl(D.cfg);return{p,meta:p.META_CRESC,mi:p.MES_INICIO,ref:'C06',man:15000,saz:true,dep:DEP.map(x=>({n:x[0],q:x[1],s:x[2]})),com:cl(D.com),mg:cl(D.catMg),mk:cl(D.mk)}}
+function sc0(mi){return{p1:[0,1].map(()=>({n:0,h:mi})),p2:[0,1,2].map(()=>({ch:CH[0],b:0,t:mi})),p3:[0,1,2].map(()=>({d:0,t:mi,n:1,cats:[]}))}}
+function calc(c,s){
+ const p=c.p,h25=D.h25,h26=D.h26,mi=c.mi,nA=Math.min(mi-1,h26.length),warn=[];
+ const acum=sum(h26.slice(0,nA)),g=acum/sum(h25.slice(0,nA))-1,meta=sum(h25)*(1+c.meta);
+ const fb=m=>m<=nA?h26[m-1]:h25[m-1]*(1+g);
+ const nc=D.cats.length,W=D.catW,mp=sum(W.map((w,i)=>w*c.mg[i]));
+ const cwK=(m,K)=>sum(K.map(i=>D.catM[i][m-1]))/sum(D.cats.map((_,i)=>D.catM[i][m-1]));
+ const mK=(m,K)=>sum(K.map(i=>D.catM[i][m-1]*c.mg[i]))/sum(K.map(i=>D.catM[i][m-1]));
+ const S=m=>!c.saz?1:(c.ref==='C06'?h25[m-1]/avg(h25.slice(0,6)):h25[m-1]/avg(h25));
+ const ref=c.ref==='C06'?p.FV_PROD_C06:c.ref==='EXP'?p.FV_PROD_EXPERIENTE:c.man;
+ const ramp=[1,2,3,4,5,6,7,8,9,10].map(i=>p['FV_RAMPA_'+i]);
+ const cm=p.FV_SAL_BASE*p.N_PAG/12*(1+p.TSU_EP+p.SEG_AT)+p.SUB_ALIM_DIA*p.DIAS_UTEIS_ANO/12+p.FV_VIATURA+p.FV_AJUDAS+p.FV_COMUNIC;
+ const ent=p.FV_RECRUT+p.FV_FORMACAO+p.FV_EQUIP,tr=p.TRANSP_PCT;
+ const z=()=>Array(13).fill(0);const F=[z(),z(),z()],C=[z(),z(),z()],Mg=[z(),z(),z()];let desc=0,v24=0,nxt=0;
+ const mkV=(ch,b,t,m)=>{const k=c.mk[ch],d=t+(ch.includes('Email')?0:1);if(m<d||b<=0)return 0;
+  const cpl=b>k.orc?k.cpl*(1+p.MKT_REND_DECR*Math.log2(b/k.orc)):k.cpl,nn=b/cpl*k.conv,j=m-d+1;return nn*p.MKT_COMPRA_NOVO*(j<=6?1:p.MKT_RETENCAO_6M)};
+ s.p1.forEach(v=>{if(v.n<=0)return;for(let m=v.h;m<=v.h+23;m++){const k=m-v.h+1,mm=(m-1)%12+1;
+  const f=v.n*ref*S(mm)*ramp[Math.min(k,10)-1]*(1-p.FV_CANIB),co=v.n*cm+p.FV_COMISSAO*f+(k==1?v.n*ent:0);
+  v24+=f*mp-co-tr*f;if(m<=12){F[0][m]+=f;C[0][m]+=co;Mg[0][m]+=f*mp}}});
+ s.p2.forEach(v=>{if(v.b<=0)return;for(let m=v.t;m<=v.t+23;m++){const mm=(m-1)%12+1,f=mkV(v.ch,v.b,v.t,m)*S(mm)/S(mm);
+  const f2=f,co=m==v.t?v.b:0;v24+=f2*mp-co-tr*f2;if(m<=12){F[1][m]+=f2;C[1][m]+=co;Mg[1][m]+=f2*mp}}});
+ const used={};
+ s.p3.forEach((v,ix)=>{if(v.d<=0||!v.cats.length||v.n<1)return;const K=v.cats,d=v.d,E=p.PRM_ELAST;C[2][v.t]+=p.PRM_CUSTO_FIXO;
+  for(let j=0;j<v.n&&v.t+j<=12;j++){const m=v.t+j;K.forEach(i=>{const key=m+'-'+i;if(used[key])warn.push('Categoria '+D.cats[i]+' repetida em '+MN[m-1]);used[key]=1});
+   const Fk=fb(m)*cwK(m,K),mk=mK(m,K),fat=Fk*(1-d)*(1+E*d),cg=Fk*(1+E*d)*(1-mk);
+   F[2][m]+=fat-Fk;Mg[2][m]+=fat-cg-Fk*mk;desc+=Fk*(1+E*d)*d;
+   if(m==11&&d+0.25>p.PRM_DESC_MAX)warn.push('Novembro: desconto + Black Friday (25%) excede o máximo de '+pc(p.PRM_DESC_MAX))}
+  const m2=v.t+v.n,last=v.t+v.n-1;if(m2<=12){const loss=fb(m2)*cwK(m2,K)*p.PRM_ANTECIP;F[2][m2]-=loss;Mg[2][m2]-=loss*mK(m2,K)}
+  else if(last>=12){nxt+=h25[0]*(1+g)*cwK(1,K)*p.PRM_ANTECIP*(1-mK(1,K))}});
+ const T=(A)=>sum(A.map(x=>sum(x)));const fatInc=T(F),marg=T(Mg),cost=T(C),transp=tr*fatInc,res=marg-cost-transp;
+ const mon=[];for(let m=1;m<=12;m++)mon.push({m,base:fb(m),p1:F[0][m],p2:F[1][m],p3:F[2][m],sim:fb(m)+F[0][m]+F[1][m]+F[2][m],meta:h25[m-1]*(1+c.meta),nec:m>=mi?h25[m-1]*(1+c.meta)*(1)-0:0});
+ const fatBase=sum(mon.map(x=>x.base)),fat=fatBase+fatInc;
+ const ps=(p.N_PAG*(1+p.TSU_EP+p.SEG_AT)),pers=sum(c.dep.map(d=>d.q*(d.s*ps+p.SUB_ALIM_DIA*p.DIAS_UTEIS_ANO)))+sum(c.com.map(x=>x.sal*ps+p.SUB_ALIM_DIA*p.DIAS_UTEIS_ANO));
+ const gasto=pers+12*(p.CF_RENDAS+p.CF_ENERGIA+p.CF_COMUNIC+p.CF_SEGUROS+p.CF_OUTROS+p.CF_FROTA_LOG)+c.com.length*p.FV_VIATURA*12+tr*fatBase+sum(c.com.map(x=>x.cm*x.f25*(1+g)))+D.mkcor;
+ const opSem=fatBase*mp-gasto,nT=sum(c.dep.map(d=>d.q))+c.com.length;
+ return{g,meta,acum,fatBase,fat,mon,mp,cm,ent,warn:[...new Set(warn)],pers,gasto,nT,ref,desvio:meta-fatBase,cf:p.CF_RENDAS+p.CF_ENERGIA+p.CF_COMUNIC+p.CF_SEGUROS+p.CF_OUTROS+p.CF_FROTA_LOG,lev:[0,1,2].map(i=>({f:sum(F[i]),c:sum(C[i]),m:sum(Mg[i])})),
+  k:{fat,var:fat/sum(h25)-1,dist:meta-fat,distp:(meta-fat)/meta,atg:fat/meta,fatInc,cost,desc,marg,res,roi:res/((cost+desc)||1),ce:(cost+desc)/(fatInc||1),v24,nxt:-nxt,opSem,opCom:opSem+res}}}
+if(typeof document==='undefined'){module.exports={cfg0,sc0,calc,CH};}
+else{
+var c=cfg0(),s=sc0(c.mi),saved=[],ch=null;const $=id=>document.getElementById(id);
+const sel=(o,v,cb)=>`<select onchange="${cb}">${o.map(x=>`<option value="${x[0]}"${x[0]==v?' selected':''}>${x[1]}</option>`).join('')}</select>`;
+const MO=()=>{const a=[];for(let m=c.mi;m<=12;m++)a.push([m,MN[m-1]]);return a};
+window.set=(o,k,v,num)=>{o[k]=num?parseFloat(String(v).replace(',','.'))||0:v;upd()};
+const inp=(l,ob,k,pct)=>`<label>${l}<input type="number" step="any" value="${pct?+(ob[k]*100).toFixed(4):ob[k]}" onchange="set(window.__o[${reg(ob)}],'${k}',${pct?'this.value/100':'this.value'},1)"></label>`;
+window.__o=[];const reg=o=>{let i=__o.indexOf(o);if(i<0){__o.push(o);i=__o.length-1}return i};
+const PG=[['Parâmetros gerais de pessoal',['N_PAG','TSU_EP','SEG_AT','SUB_ALIM_DIA','DIAS_UTEIS_ANO']],['Novo comercial (P1)',['FV_SAL_BASE','FV_COMISSAO','FV_VIATURA','FV_AJUDAS','FV_COMUNIC','FV_RECRUT','FV_FORMACAO','FV_EQUIP','FV_CANIB','FV_PROD_C06','FV_PROD_EXPERIENTE']],['Marketing (P2)',['MKT_COMPRA_NOVO','MKT_RETENCAO_6M','MKT_REND_DECR']],['Promoções (P3)',['PRM_ELAST','PRM_ANTECIP','PRM_CUSTO_FIXO','PRM_DESC_MAX']],['Custos fixos e tesouraria',['CF_RENDAS','CF_ENERGIA','CF_COMUNIC','CF_SEGUROS','CF_OUTROS','CF_FROTA_LOG','TRANSP_PCT','PMR']]];
+const PCT=['TSU_EP','SEG_AT','FV_COMISSAO','FV_CANIB','MKT_RETENCAO_6M','MKT_REND_DECR','PRM_ANTECIP','PRM_DESC_MAX','TRANSP_PCT'];
+function buildCfg(){__o=[];window.__o=__o;let h=`<h3>Empresa e meta</h3><div class=g><label>Empresa<input value="${c.p.EMP_NOME}" onchange="c.p.EMP_NOME=this.value"></label>`+inp('Meta de crescimento (%)',c,'meta',1)+`<label>Mês de início<select onchange="c.mi=+this.value;s=sc0(c.mi);buildAll()">${Array.from({length:12-D.h26.length},(_,i)=>i+D.h26.length+1).map(m=>`<option value=${m}${m==c.mi?' selected':''}>${MN[m-1]}</option>`).join('')}</select></label></div>`;
+ PG.forEach(g=>{h+=`<h3>${g[0]}</h3><div class=g>`+g[1].map(k=>inp(LB[k]||k,c.p,k,PCT.includes(k))).join('')+'</div>'});
+ h+=`<h3>Produtividade de referência</h3><div class=g><label>Referência${sel([['C06','C06 (jan.–jun.)'],['EXP','Média dos experientes'],['MAN','Valor manual']],c.ref,"c.ref=this.value;upd()")}</label>`+inp('Valor manual (€/mês)',c,'man')+`<label>Sazonalidade${sel([[1,'Ligada'],[0,'Desligada (S=1)']],c.saz?1:0,"c.saz=this.value==1;upd()")}</label></div><h3>Curva de rampa (%)</h3><div class=g>`+[1,2,3,4,5,6,7,8,9,10].map(i=>inp('Mês '+i,c.p,'FV_RAMPA_'+i,1)).join('')+'</div>';
+ h+='<h3>Departamentos (n.º e salário base médio)</h3><div class=g>'+c.dep.map(d=>inp(d.n+': n.º',d,'q')+inp(d.n+': salário (€)',d,'s')).join('')+'</div><h3>Comerciais atuais (salário, comissão, viatura)</h3><div class=g>'+c.com.map(x=>inp(x.c+': salário (€)',x,'sal')+inp(x.c+': comissão (%)',x,'cm',1)+inp(x.c+': viatura (€)',x,'vi')).join('')+'</div>';
+ h+='<h3>Margem bruta por categoria (%)</h3><div class=g>'+D.cats.map((n,i)=>inp(n+' ('+pc(D.catW[i])+' da fat.)',c.mg,i,1)).join('')+'</div><h3>Canais de marketing</h3><div class=g>'+CH.map(k=>inp(k.split(' (')[0]+': custo por lead (€)',c.mk[k],'cpl')+inp(k.split(' (')[0]+': conversão (%)',c.mk[k],'conv',1)+inp(k.split(' (')[0]+': orçamento médio (€)',c.mk[k],'orc')).join('')+'</div><p><button onclick="c=cfg0();s=sc0(c.mi);buildAll()">Repor valores do Excel</button></p>';$('cfg').innerHTML=h.split('<h3>').filter(Boolean).map(x=>'<section class=card><h3>'+x+'</section>').join('')}
+function buildSc(){__o=window.__o=window.__o||[];const mo=MO();
+ $('p1').innerHTML='<div class=imp id=i1></div><p class=n>Custo fixo por comercial: <b id=cm></b>/mês + comissão + custos de entrada (<b id=en></b>).</p>'+s.p1.map((v,i)=>`<div class="card g"><label>Vaga ${i+1}: n.º de comerciais<select onchange="set(s.p1[${i}],'n',+this.value)">${[0,1,2,3,4,5,6].map(n=>`<option${n==v.n?' selected':''}>${n}</option>`).join('')}</select></label><label>Mês de entrada${sel(mo,v.h,`set(s.p1[${i}],'h',+this.value)`)}</label></div>`).join('');
+ $('p2').innerHTML='<div class=imp id=i2></div>'+s.p2.map((v,i)=>`<div class="card g"><label>Campanha ${i+1}: canal${sel(CH.map(k=>[k,k]),v.ch,`set(s.p2[${i}],'ch',this.value)`)}</label><label>Orçamento (€)<input type=number value=${v.b} onchange="set(s.p2[${i}],'b',this.value,1)"></label><label>Mês${sel(mo,v.t,`set(s.p2[${i}],'t',+this.value)`)}</label></div>`).join('');
+ $('p3').innerHTML='<div class=imp id=i3></div>'+s.p3.map((v,i)=>`<div class="card g"><label>Promoção ${i+1}: desconto (%)<input type=number value=${v.d*100} onchange="set(s.p3[${i}],'d',this.value/100,1)"></label><label>Mês inicial${sel(mo,v.t,`set(s.p3[${i}],'t',+this.value)`)}</label><label>N.º de meses<input type=number min=1 max=6 value=${v.n} onchange="set(s.p3[${i}],'n',+this.value)"></label></div><details><summary>Categorias (${v.cats.length})</summary>${D.cats.map((n,j)=>`<label class=ck><input type=checkbox ${v.cats.includes(j)?'checked':''} onchange="tg(${i},${j},this.checked)"> ${n}</label>`).join('')}<button onclick="tgAll(${i})">Todas</button></details>`).join('')}
+window.tg=(i,j,on)=>{const a=s.p3[i].cats;if(on&&!a.includes(j))a.push(j);if(!on)s.p3[i].cats=a.filter(x=>x!=j);upd()};
+window.tgAll=i=>{s.p3[i].cats=D.cats.map((_,j)=>j);buildSc();upd()};
+window.buildAll=()=>{buildCfg();buildSc();upd()};
+const KL=[['fat','Faturação do ano da meta',eur],['var','Variação face ao ano base',pc],['dist','Distância à meta',eur],['distp','Distância à meta (%)',pc],['fatInc','Faturação incremental',eur],['cost','Custos incrementais',eur],['desc','Desconto concedido',eur],['marg','Margem bruta incremental',eur],['res','Resultado incremental',eur],['roi','ROI',x=>x.toFixed(2)],['ce','Custo por € adicional',x=>x.toFixed(2)+' €'],['v24','Valor a 24 meses (P1+P2)',eur],['nxt','Efeito no ano seguinte',eur],['opSem','Resultado operacional sem medidas',eur],['opCom','Resultado operacional com medidas',eur]];
+const LB={N_PAG:'Pagamentos de salário por ano',TSU_EP:'TSU da empresa (%)',SEG_AT:'Seguro de acidentes de trabalho (%)',SUB_ALIM_DIA:'Subsídio de alimentação (€/dia)',DIAS_UTEIS_ANO:'Dias úteis por ano',FV_SAL_BASE:'Salário base do novo comercial (€/mês)',FV_COMISSAO:'Comissão sobre vendas (%)',FV_VIATURA:'Viatura (€/mês)',FV_AJUDAS:'Ajudas de custo (€/mês)',FV_COMUNIC:'Comunicações (€/mês)',FV_RECRUT:'Recrutamento (€, único)',FV_FORMACAO:'Formação inicial (€, único)',FV_EQUIP:'Equipamento e amostras (€, único)',FV_CANIB:'Canibalização (%)',FV_PROD_C06:'Produtividade do C06 (€/mês)',FV_PROD_EXPERIENTE:'Produtividade dos experientes (€/mês)',MKT_COMPRA_NOVO:'Compra mensal de novo cliente (€)',MKT_RETENCAO_6M:'Retenção a 6 meses (%)',MKT_REND_DECR:'Rendimentos decrescentes (%)',PRM_ELAST:'Elasticidade promocional',PRM_ANTECIP:'Antecipação no mês seguinte (%)',PRM_CUSTO_FIXO:'Custo fixo por promoção (€)',PRM_DESC_MAX:'Desconto máximo (%)',CF_RENDAS:'Rendas (€/mês)',CF_ENERGIA:'Energia e água (€/mês)',CF_COMUNIC:'Comunicações e software (€/mês)',CF_SEGUROS:'Seguros (€/mês)',CF_OUTROS:'Outros gastos fixos (€/mês)',CF_FROTA_LOG:'Viatura de distribuição (€/mês)',TRANSP_PCT:'Transportes (% da faturação)',PMR:'Prazo médio de recebimento (dias)'};
+const KG=[['Impacto na meta',['fat','var','dist','distp']],['Medidas simuladas',['fatInc','cost','desc','marg','res']],['Rentabilidade',['roi','ce','v24','nxt']],['Resultado operacional',['opSem','opCom']]];
+const NEG=['res','marg','opCom','v24','nxt'],kl=Object.fromEntries(KL.map(x=>[x[0],x]));
+const tile=(l,v,sb,t)=>`<div class="tl ${t||''}"><small>${l}</small><b>${v}</b>${sb?`<em>${sb}</em>`:''}</div>`;
+window.upd=()=>{const r=calc(c,s),k=r.k,p=c.p;window.R=r;
+ if($('cm')){$('cm').textContent=eur(r.cm);$('en').textContent=eur(r.ent)}
+ const ok=k.fat>=r.meta,pb=Math.min(r.fatBase/r.meta,1),ps=Math.min(k.fat/r.meta,1),tr=p.TRANSP_PCT;
+ $('hn').textContent=p.EMP_NOME;$('hs').textContent=p.EMP_SETOR+', sede em '+p.EMP_SEDE;$('gv').textContent=eur(r.desvio);
+ $('gs').innerHTML=ok?`<b>Meta atingida</b> com as medidas (excedente de ${eur(-k.dist)})`:`Com as medidas simuladas ainda faltam <b>${eur(k.dist)}</b>`;
+ $('gp').innerHTML=`<div class=trk><i style="width:${ps*100}%"></i><u style="left:${pb*100}%"></u></div><div class=tls><span>Sem medidas: ${pc(r.fatBase/r.meta)}</span><span>Com medidas: ${pc(k.atg)}</span><span>Meta: ${eur(r.meta)}</span></div>`;
+ $('dash').innerHTML='<h2>A empresa</h2><div class=tg>'+tile('Trabalhadores',r.nT,(r.nT-c.com.length)+' nos departamentos e '+c.com.length+' comerciais')+tile('Custo anual com pessoal',eur(r.pers),eur(r.pers/12)+' por mês')+tile('Custos fixos mensais',eur(r.cf),eur(r.cf*12)+' por ano')+tile('Gastos operacionais anuais',eur(r.gasto),'estimativa do ano da meta')+tile('Margem bruta',pc(r.mp),'média ponderada')+`</div><h2>Meta e resultado de ${p.ANO_META}</h2><div class=tg>`+tile('Meta de faturação',eur(r.meta),'+'+pc(c.meta)+' face a '+p.ANO_BASE)+tile('Faturação sem medidas',eur(r.fatBase),'crescimento homólogo de '+pc(r.g))+tile('Resultado operacional sem medidas',eur(k.opSem))+tile('Resultado operacional com medidas',eur(k.opCom),'',k.opCom<k.opSem?'bad':'good')+tile('Efeito das medidas no resultado',eur(k.res),'',k.res<0?'bad':'good')+'</div>';
+ $('bar').innerHTML=`<b class="${ok?'ok':'ko'}">${ok?'Meta atingida':'Meta não atingida'}</b> (${pc(k.atg)} da meta), ${ok?'excedente de '+eur(-k.dist):'faltam '+eur(k.dist)}`;
+ $('kp').innerHTML=r.warn.map(w=>`<p class=w>⚠ ${w}</p>`).join('')+KG.map(g=>`<h2>${g[0]}</h2><div class=tg>`+g[1].map(id=>{const v=k[id];return tile(kl[id][1],kl[id][2](v),'',NEG.includes(id)?(v<0?'bad':'good'):(id=='dist'||id=='distp'?(v>0?'bad':'good'):''))}).join('')+'</div>').join('')+'<p class=n>A combinação soma os efeitos das três alavancas (pressuposto de aditividade).</p>';
+ [1,2,3].forEach((n,i)=>{const e=$('i'+n),l=r.lev[i];if(e)e.innerHTML=`<b>Impacto desta alavanca:</b> ${l.f>=0?'+':''}${eur(l.f)} de faturação, custos de ${eur(l.c)}${i==2?', desconto concedido de '+eur(k.desc):''}, resultado de ${eur(l.m-l.c-tr*l.f)}.`});
+ $('tb').innerHTML='<tr><th>Mês<th>Base<th>P1<th>P2<th>P3<th>Simulado<th>Necessário</tr>'+r.mon.map(x=>`<tr><td>${MN[x.m-1]}<td>${eur(x.base)}<td>${eur(x.p1)}<td>${eur(x.p2)}<td>${eur(x.p3)}<td>${eur(x.sim)}<td>${x.m>=c.mi?eur(x.meta):'—'}</tr>`).join('');
+ if(window.Chart){Chart.defaults.color=getComputedStyle(document.body).color;Chart.defaults.font.family='Manrope,system-ui,sans-serif';
+  const d=[D.h25,D.h26.concat(Array(12-D.h26.length).fill(null)),r.mon.map(x=>x.base),r.mon.map(x=>x.sim),r.mon.map(x=>x.meta)],nm=['Ano base real','Ano da meta real','Cenário base','Simulado','Meta mensal'],co=['#8a9aa2','#1f7a8c','#e0a030','#1f8a5b','#c4432b'],dh=[[],[],[5,4],[],[2,4]],w=[1.5,2.5,2,3.5,2];
+  if(ch)ch.destroy();ch=new Chart($('cv'),{type:'line',data:{labels:MN,datasets:d.map((v,i)=>({label:nm[i],data:v,borderColor:co[i],backgroundColor:co[i],borderWidth:w[i],borderDash:dh[i],pointRadius:i==3?3:1,tension:.25}))},options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8}}},scales:{y:{ticks:{callback:v=>v/1000+' k€'}}}}})}}
+const SET={A:()=>{s=sc0(c.mi);s.p1[0]={n:2,h:c.mi}},B:()=>{s=sc0(c.mi);s.p2[0]={ch:CH.find(k=>k.includes('Meta')),b:c.mk[CH.find(k=>k.includes('Meta'))].orc,t:9};const f=CH.find(k=>k.includes('Feira'));s.p2[1]={ch:f,b:c.mk[f].orc,t:10}},C:()=>{s=sc0(c.mi);s.p3[0]={d:.15,t:11,n:2,cats:D.cats.map((_,j)=>j)}},D:()=>{const a=sc0(c.mi);SET.A();const x=s.p1;SET.B();const y=s.p2;SET.C();s.p1=x;s.p2=y},E:()=>{SET.D();c.dep.forEach(d=>d.s*=1.05);c.com.forEach(x=>x.sal*=1.05);c.mg=c.mg.map(m=>m-.01)}};
+window.pre=k=>{if(k!='E'||true){c=cfg0()}SET[k]();buildAll()};
+window.save=()=>{if(saved.length>=4){alert('Máximo de 4 cenários.');return}
+ saved.push({n:$('nm').value||'Cenário '+(saved.length+1),k:cl(window.R.k),t:window.R.k.atg,c:(window.me&&window.me.u)||'—'});
+ $('nm').value='';cmp()};
+// Regra 4 — Privilégios de gestão: só o master_admin ou quem criou o cenário o pode remover.
+const canDel=i=>window.me&&(window.me.role==='master_admin'||window.me.u===saved[i].c);
+window.delSc=i=>{if(!canDel(i))return;if(!confirm('Remover o cenário «'+saved[i].n+'»?'))return;saved.splice(i,1);cmp()};
+const cmp=()=>{$('cmpT').innerHTML='<tr><th>Indicador'+saved.map(x=>'<th>'+x.n+'<br><small class=n>por '+x.c+'</small>').join('')+'</tr>'
+ +KL.map(l=>`<tr><td>${l[1]}`+saved.map(x=>'<td>'+l[2](x.k[l[0]])).join('')+'</tr>').join('')
+ +`<tr><td>Meta`+saved.map(x=>'<td>'+(x.t>=1?'Atingida':'Não atingida')+' ('+pc(x.t)+')').join('')+'</tr>'
+ +(saved.length?'<tr><td></td>'+saved.map((x,i)=>'<td>'+(canDel(i)?`<button onclick="delSc(${i})">Apagar</button>`:'')).join('')+'</tr>':'')};
+window.cmp=cmp;
+window.tab=i=>{document.querySelectorAll('.pg').forEach((e,j)=>e.style.display=j==i?'block':'none');document.querySelectorAll('nav button').forEach((e,j)=>e.className=j==i?'on':'');if(i==4)upd();if(i==7)$('tx').value=snap()};
+const fs$=(t,ok)=>{$('fs').textContent=t;$('fs').className='fs '+(ok?'ok':'ko')};
+const save=async(name,data)=>{try{const d=window.claude&&await claude.use('downloads');if(!d)return fs$('Neste ambiente não é possível gravar ficheiros. Use «Configuração em texto» para copiar.');await d.save({filename:name,data});fs$('Ficheiro «'+name+'» pronto.',1)}catch(e){fs$(e&&e.code=='declined'?'Gravação cancelada.':'Não foi possível gravar o ficheiro ('+(e&&e.code||'erro')+').')}};
+const snap=()=>JSON.stringify({v:1,c,s,hist:{h24:D.h24,h25:D.h25,h26:D.h26,cats:D.cats,catM:D.catM,catW:D.catW,catMg:D.catMg,mkcor:D.mkcor,mk:D.mk,com:D.com}});
+const impJ=t=>{try{const o=JSON.parse(t);if(!o.c||!o.s)throw 0;if(o.hist)Object.assign(D,o.hist);CH.splice(0,CH.length,...Object.keys(D.mk));c=o.c;s=o.s;buildAll();fs$('Configuração importada e simulador atualizado.',1)}catch(e){fs$('Ficheiro inválido: use um JSON exportado por este simulador.')}};
+const impX=async f=>{if(!window.XLSX)return fs$('A biblioteca de Excel não carregou (ambiente sem acesso à internet).');
+ try{const wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true}),J=n=>{if(!wb.Sheets[n])throw n;return XLSX.utils.sheet_to_json(wb.Sheets[n])},cf=XLSX.utils.sheet_to_json(wb.Sheets.Configuracao||(()=>{throw'Configuracao'})(),{header:1}),P={},r2=v=>Math.round(v*100)/100;
+  cf.forEach(r=>{if(typeof r[0]=='string'&&/^[A-Z][A-Z0-9_]+$/.test(r[0])&&r[2]!=null)P[r[0]]=typeof r[2]=='number'?r[2]:String(r[2])});
+  ['RH_GER','RH_DIRCOM','RH_VINT','RH_MKT','RH_LOG','RH_FIN'].forEach((k,i)=>{const r=cf.find(x=>x[0]==k);if(r){DEP[i][1]=r[2];DEP[i][2]=r[3]}});
+  const mk={};cf.forEach(r=>{if(/^MKT_/.test(r[0])&&typeof r[6]=='number'&&typeof r[1]=='string')mk[r[1]]={cpl:r2(r[6]),conv:r[7],orc:Math.round(r[9])}});if(Object.keys(mk).length)D.mk=mk;
+  Object.assign(D.cfg,P);const yb=+D.cfg.ANO_BASE,ym=+D.cfg.ANO_META,V='Valor líquido (€, sem IVA)',yr={};
+  J('Encomendas').forEach(r=>{(yr[r['Ano']]=yr[r['Ano']]||Array(12).fill(0))[r['Mês']-1]+=r[V]||0});
+  if(!yr[yb]||!yr[yb-1]||!yr[ym])throw 'anos em falta nas Encomendas';
+  D.h24=yr[yb-1].map(r2);D.h25=yr[yb].map(r2);let n=12;while(n>0&&!(yr[ym][n-1]>0))n--;D.h26=yr[ym].slice(0,n).map(r2);
+  const cm={},mg={},ft={};J('Linhas_Encomenda').forEach(r=>{if(r['Ano']!=yb)return;const k=r['Categoria'];(cm[k]=cm[k]||Array(12).fill(0))[r['Mês']-1]+=r[V]||0;mg[k]=(mg[k]||0)+(r['Margem bruta (€)']||0);ft[k]=(ft[k]||0)+(r[V]||0)});
+  const cats=Object.keys(cm).sort(),tot=sum(cats.map(k=>ft[k]));D.cats=cats;D.catM=cats.map(k=>cm[k].map(Math.round));D.catW=cats.map(k=>ft[k]/tot);D.catMg=cats.map(k=>mg[k]/ft[k]);
+  D.com=J('Comerciais').filter(r=>r['Código']!='INT').map(r=>({c:r['Código'],sal:r['Salário base mensal (€)'],cm:r['Comissão sobre vendas (%)'],vi:r['Viatura e combustível (€/mês)'],f25:r['Faturação '+yb+' (€)']||0}));
+  D.mkcor=sum(J('Campanhas_Marketing').filter(r=>{const y=new Date(r['Data de início']).getFullYear();return y==yb||y==yb-1}).map(r=>r['Investimento (€)']))/2;
+  D.cfg.MES_INICIO=Math.max(+D.cfg.MES_INICIO||7,D.h26.length+1);CH.splice(0,CH.length,...Object.keys(D.mk));c=cfg0();s=sc0(c.mi);buildAll();
+  fs$('Excel importado: '+D.h26.length+' meses de '+ym+', '+cats.length+' categorias e '+D.com.length+' comerciais.',1)}catch(e){fs$(typeof e=='string'?'Ficheiro sem a estrutura esperada ('+e+').':'Não foi possível ler o Excel. Use um ficheiro com a mesma estrutura do original.')}};
+window.impX=impX;
+const n2=v=>typeof v=='number'?v.toFixed(2).replace('.',','):v,HD=['Mês','Ano base real','Ano da meta real','Cenário base','P1','P2','P3','Simulado','Meta mensal'];
+const mrows=()=>window.R.mon.map(x=>[MN[x.m-1],D.h25[x.m-1],D.h26[x.m-1]??'',x.base,x.p1,x.p2,x.p3,x.sim,x.meta]);
+const csv=()=>save('simulador_mensal.csv','\ufeff'+[HD].concat(mrows().map(a=>a.map(n2))).map(a=>a.join(';')).join('\n'));
+const xl=()=>{if(!window.XLSX)return fs$('A biblioteca de Excel não carregou. Use a exportação CSV.');const r=window.R,k=r.k,pp=['var','distp'],A=XLSX.utils.aoa_to_sheet,wb=XLSX.utils.book_new(),ad=(a,n)=>XLSX.utils.book_append_sheet(wb,A(a),n);
+ ad([['Empresa',c.p.EMP_NOME],['Meta de faturação (€)',r.meta],['Faturação sem medidas (€)',r.fatBase],['Desvio a cobrir (€)',r.desvio],['Trabalhadores',r.nT],['Custo anual com pessoal (€)',r.pers],['Custos fixos mensais (€)',r.cf],['Margem bruta ponderada (%)',r.mp*100],['Meta atingida',k.fat>=r.meta?'Sim':'Não'],[],['Indicador','Valor']].concat(KL.map(x=>[x[1]+(pp.includes(x[0])?' (%)':''),pp.includes(x[0])?k[x[0]]*100:k[x[0]]])),'Resumo');
+ ad([HD].concat(mrows()),'Mensal');
+ ad([['Medida','Detalhe','Valor']].concat(s.p1.filter(v=>v.n>0).map((v,i)=>['P1 vaga '+(i+1),MN[v.h-1],v.n+' comerciais']),s.p2.filter(v=>v.b>0).map(v=>['P2 '+v.ch,MN[v.t-1],v.b]),s.p3.filter(v=>v.d>0).map((v,i)=>['P3 promoção '+(i+1),MN[v.t-1]+', '+v.n+' mês(es): '+v.cats.map(j=>D.cats[j]).join(', '),v.d*100+'%'])),'Medidas');
+ if(saved.length)ad([['Indicador'].concat(saved.map(x=>x.n))].concat(KL.map(l=>[l[1]].concat(saved.map(x=>x.k[l[0]])))),'Cenários guardados');
+ save('simulador_resultados.xlsx',XLSX.write(wb,{bookType:'xlsx',type:'array'}))};
+const pick=f=>{if(!f)return;if(/\.json$/i.test(f.name))f.text().then(impJ);else if(/\.xls[xm]$/i.test(f.name))impX(f);else fs$('Formato não suportado: use .json ou .xlsx.')};
+$('fi').onchange=e=>{pick(e.target.files[0]);e.target.value=''};
+const dz=$('dz');dz.onclick=()=>$('fi').click();['dragover','dragenter'].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.add('dv')}));['dragleave','drop'].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.remove('dv')}));dz.addEventListener('drop',e=>pick(e.dataTransfer.files[0]));
+$('bj').onclick=()=>save('simulador_configuracao.json',snap());$('bx').onclick=xl;$('bc').onclick=csv;$('bt').onclick=()=>impJ($('tx').value);
+$('bcp').onclick=async()=>{try{await navigator.clipboard.writeText($('tx').value)}catch(e){$('tx').select();document.execCommand('copy')}fs$('Configuração copiada.',1)};
+buildAll();tab(0);
 }
+</script>
+<script>(async()=>{
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'),norm=u=>u.trim().toLowerCase(),wait=ms=>new Promise(r=>setTimeout(r,ms));
+const enc=new TextEncoder(),b64=u=>btoa(String.fromCharCode(...u)),unb=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const hash=async(pw,salt)=>b64(new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt,iterations:150000},await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveBits']),256)));
+// ----- CONFIGURAÇÃO DO FIREBASE: substitua pelos valores do seu projeto -----
+// Consola Firebase > Definições do projeto > Geral > As suas apps > Configuração do SDK
+const firebaseConfig={apiKey:"AIzaSyCm5P-H3WGiVIYjUK1oUmb5WaPAIQhhmpA",authDomain:"simulador-79d24.firebaseapp.com",projectId:"simulador-79d24",storageBucket:"simulador-79d24.firebasestorage.app",messagingSenderId:"272960377646",appId:"1:272960377646:web:e5c0e8237f68f17c80a0bf"};
+const EMAIL_DOMAIN='equipa-simulador.app'; // domínio fictício: o login continua a ser por nome de utilizador, não por email
+const toEmail=u=>u+'@'+EMAIL_DOMAIN;
+// -----------------------------------------------------------------------------
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth(),dbf=firebase.firestore();
+let me=null,mode=0,setup=false,busy=false,registering=false;
+const say=(t,ok)=>{$('gm').textContent=t;$('gm').className=ok?'ok':'ko'};
+window.gt=m=>{mode=m;$('t1').className=m?'':'on';$('t2').className=m?'on':'';document.querySelectorAll('.rg').forEach(e=>e.style.display=m?'flex':'none');$('go').textContent=m?'Criar utilizador':'Entrar';$('lcs').textContent=setup?'Defina o código da equipa (os colegas vão precisar dele)':'Código da equipa (pedir a um colega)';say('')};
+
+function enter(uid,x){me={uid,u:x.handle,name:x.name||x.handle,role:x.role};window.me=me;window.userRole=me.role;
+ document.body.classList.remove('locked');$('lp').value=$('lp2').value=$('lc').value='';say('');
+ $('ub').innerHTML=`<span>Sessão de <b>${esc(me.name)}</b>${me.role=='master_admin'?' (Admin Master)':''}</span><span><button id=bu data-role-gate="master_admin">Utilizadores</button> <button id=bo>Sair</button></span>`;
+ $('bo').onclick=()=>auth.signOut();
+ $('bu').onclick=async()=>{if(!$('up').hidden){$('up').hidden=true;return}await users();$('up').hidden=false};
+ updateUIBasedOnRole(me.role);
+ if(window.tab)tab(0);if(window.upd)upd()}
+
+// Regra 3: mostra/esconde elementos marcados com data-role-gate="<role>" consoante o role atual.
+// Hoje só o botão "Utilizadores" usa esta marca; para criar separadores futuros como
+// "Administração" ou "Definições", basta acrescentar o mesmo atributo ao elemento.
+function updateUIBasedOnRole(role){
+ document.querySelectorAll('[data-role-gate]').forEach(el=>{el.style.display=(role===el.dataset.roleGate)?'':'none'});
+ if(window.cmp)window.cmp(); // re-renderiza a tabela de cenários para atualizar os botões de apagar
+}
+
+async function users(){try{const q=await dbf.collection('users').get();
+ const rl={master_admin:'Admin Master',visitor:'visitante'};
+ $('up').innerHTML='<div class=card><h3>Utilizadores com acesso</h3>'+q.docs.map(d=>{const x=d.data();return `<div class=ur><span>${esc(x.name)} (${esc(x.handle)}), ${esc(rl[x.role]||x.role)}</span>${d.id!==me.uid?`<button data-u="${esc(d.id)}">Remover</button>`:''}</div>`}).join('')
+  +'</div><p class=n>Remover revoga o acesso à base de dados; se quiser apagar também a conta de autenticação, faça-o na consola Firebase &gt; Authentication.</p>'}
+ catch(e){$('up').innerHTML='<p class=n>Sem permissão para listar utilizadores.</p>'}}
+$('up').onclick=async e=>{const u=e.target.dataset&&e.target.dataset.u;if(u&&confirm('Remover o acesso deste utilizador?')){try{await dbf.doc('users/'+u).delete();await users()}catch(x){say('Não foi possível remover.')}}};
+
+async function login(){const u=norm($('lu').value),p=$('lp').value;
+ try{await auth.signInWithEmailAndPassword(toEmail(u),p)}
+ catch(e){await wait(800);say('Nome de utilizador ou palavra-passe incorretos.')}}
+
+async function reg(){const u=norm($('lu').value),p=$('lp').value,c=$('lc').value;
+ if(!/^[a-z0-9._-]{3,24}$/.test(u))return say('Nome de utilizador: 3 a 24 caracteres (letras, números, ponto, hífen ou _).');
+ if(p.length<8)return say('A palavra-passe deve ter pelo menos 8 caracteres.');
+ if(p!==$('lp2').value)return say('As palavras-passe não coincidem.');
+ if(!c)return say('Indique o código da equipa.');
+ try{
+  // Regra 1 — Registo Inteligente: query à coleção users (limite 1) ANTES de gravar.
+  // Coleção vazia → este utilizador é o 'master_admin'; caso contrário → 'visitor'.
+  const first=(await dbf.collection('users').limit(1).get()).empty,t=await dbf.doc('meta/team').get();let admin=false;
+  if(first&&!t.exists){admin=true}
+  else{if(!t.exists)return say('Falta o código da equipa. Peça ao administrador.');const x=t.data();if(await hash(c,unb(x.salt))!==x.hash){await wait(800);return say('Código da equipa incorreto.')}}
+  registering=true;
+  const cred=await auth.createUserWithEmailAndPassword(toEmail(u),p);
+  if(admin){const s=crypto.getRandomValues(new Uint8Array(16));await dbf.doc('meta/team').set({salt:b64(s),hash:await hash(c,s)})}
+  const rec={handle:u,name:$('ln').value.trim()||u,role:admin?'master_admin':'visitor',created:new Date().toISOString()};
+  await dbf.doc('users/'+cred.user.uid).set(rec);setup=false;enter(cred.user.uid,rec)
+ }catch(e){
+  const m=e&&e.code=='auth/email-already-in-use'?': esse nome de utilizador já existe.':e&&e.code=='auth/weak-password'?': palavra-passe demasiado fraca para o Firebase.':'';
+  say('Não foi possível criar o utilizador'+m+(m?'':' ('+(e&&e.code||'erro')+').'))}
+ finally{registering=false}}
+
+$('go').onclick=async()=>{if(busy)return;busy=true;$('go').disabled=true;await(mode?reg():login());busy=false;$('go').disabled=false};
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.body.classList.contains('locked'))$('go').click()});
+
+auth.onAuthStateChanged(async user=>{
+ if(!user){me=null;window.me=null;window.userRole=null;document.body.classList.add('locked');$('up').hidden=true;updateUIBasedOnRole(null);return}
+ if(registering)return; // reg() escreve o perfil e entra diretamente, para evitar corrida com esta verificação
+ // Regra 2 — Leitura de Permissões no Login: getDoc do utilizador em "users" para extrair o role.
+ try{const d=await dbf.doc('users/'+user.uid).get();
+  if(!d.exists){say('A sua conta foi removida pelo administrador.');await auth.signOut();return}
+  enter(user.uid,d.data()) // guarda o role em window.me.role / window.userRole e chama updateUIBasedOnRole()
+ }catch(e){say('Não foi possível validar a sessão. Verifique a ligação à internet.')}});
+
+try{setup=(await dbf.collection('users').limit(1).get()).empty}catch(e){say('Não foi possível ligar à base de dados Firebase. Confirme firebaseConfig e as regras do Firestore.')}
+gt(setup?1:0);if(setup)say('Ainda não há utilizadores: crie o primeiro (será o Admin Master).',1);
+})();
+</script></body></html>
